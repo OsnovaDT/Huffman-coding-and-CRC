@@ -18,62 +18,52 @@ def get_symbols_frequency(message):
     return dict(symbols_frequency)
 
 
+def get_symbols_probability(symbols_frequency):
+    """Get probability for symbols in the message"""
+
+    symbols_probability = dict()
+    message_len = sum(symbols_frequency.values())
+
+    for symbol, symbol_frequency in symbols_frequency.items():
+        probability_for_current_symbol = get_probability_for_symbol(
+            symbol_frequency, message_len
+        )
+        symbols_probability[symbol] = probability_for_current_symbol
+
+    return symbols_probability
+
+
 def get_probability_for_symbol(symbol_frequency, message_len):
     """Get probability for symbol"""
 
     return round(symbol_frequency / message_len, 5)
 
 
-def calculate_symbols_probability(
-        symbols_probability, symbols_frequency, message_len):
-    """Calculate probability for all symbols in the message"""
+def get_symbols_sorted_by_frequency(symbols_frequency):
+    """Get symbols sorted by frequency"""
 
-    for symbol, frequency in symbols_frequency.items():
-        probability_for_current_symbol = get_probability_for_symbol(
-            frequency, message_len
-        )
-
-        symbols_probability[symbol] = probability_for_current_symbol
-
-
-def get_symbols_probability(message):
-    """Get probability for symbols in the message"""
-
-    symbols_probability = dict()
-
-    symbols_frequency = get_symbols_frequency(message)
-    message_len = len(message)
-
-    calculate_symbols_probability(
-        symbols_probability, symbols_frequency, message_len
-    )
-
-    return symbols_probability
-
-
-def get_sorted_symbols_by_frequency(symbols_frequency):
-    """Get sorted symbols by frequency"""
-
-    symbols_frequency = dict(sorted(
+    symbols_sorted_by_frequency = dict(sorted(
         symbols_frequency.items(),
-        key=lambda item: item[1],
+        key=lambda symbol_and_frequency: symbol_and_frequency[1],
         reverse=True
     ))
 
-    return symbols_frequency
+    return symbols_sorted_by_frequency
 
 
 def print_frequency_and_probability_for_symbols(
         symbols_frequency, symbols_probability):
     """Print frequency and probability for symbols"""
 
-    symbols_frequency = get_sorted_symbols_by_frequency(symbols_frequency)
-    symbols = symbols_frequency.keys()
+    symbols_sorted_by_frequency = get_symbols_sorted_by_frequency(
+        symbols_frequency
+    )
+    symbols = symbols_sorted_by_frequency.keys()
 
     print('Symbol\tFrequency\tProbability\n')
 
     for symbol in symbols:
-        symbol_frequency = symbols_frequency[symbol]
+        symbol_frequency = symbols_sorted_by_frequency[symbol]
         symbol_probability = symbols_probability[symbol]
 
         print(f"{symbol}\t{symbol_frequency}\t\t{symbol_probability}")
@@ -85,7 +75,7 @@ def calculate_huffman_code(message):
     print(f'Initial message: {message}\n')
 
     symbols_frequency = get_symbols_frequency(message)
-    symbols_probability = get_symbols_probability(message)
+    symbols_probability = get_symbols_probability(symbols_frequency)
 
     print_frequency_and_probability_for_symbols(
         symbols_frequency, symbols_probability

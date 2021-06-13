@@ -3,9 +3,11 @@
 from bisect import bisect_left
 from collections import defaultdict
 from pprint import pprint
+from math import log2
 
 
 MESSAGE = "Communication systems with over-the-air-programming"
+# MESSAGE = "the art. Such systems quite often reprogram information"
 # MESSAGE = "hello"
 
 
@@ -25,21 +27,21 @@ def get_symbols_probability(symbols_with_frequency):
     """Get probability for symbols in the message"""
 
     symbols_probability = dict()
-    message_len = sum(symbols_with_frequency.values())
+    message_length = sum(symbols_with_frequency.values())
 
     for symbol, symbol_frequency in symbols_with_frequency.items():
         probability_for_current_symbol = get_probability_for_symbol(
-            symbol_frequency, message_len
+            symbol_frequency, message_length
         )
         symbols_probability[symbol] = probability_for_current_symbol
 
     return symbols_probability
 
 
-def get_probability_for_symbol(symbol_frequency, message_len):
+def get_probability_for_symbol(symbol_frequency, message_length):
     """Get probability for symbol"""
 
-    return round(symbol_frequency / message_len, 5)
+    return round(symbol_frequency / message_length, 5)
 
 
 def get_sorted_symbols_with_frequency(
@@ -150,6 +152,21 @@ def delete_first_2_nodes(tree):
     del tree_frequency[0]
 
 
+def get_entropy(frequency_for_symbols):
+    """Get entropy"""
+
+    entropy = 0
+    message_length = sum(frequency_for_symbols)
+
+    for frequency in frequency_for_symbols:
+        probability_for_symbol = get_probability_for_symbol(
+            frequency, message_length
+        )
+        entropy -= probability_for_symbol * log2(probability_for_symbol)
+
+    return round(entropy, 5)
+
+
 def calculate_huffman_code(message):
     """Calculate Huffman code"""
 
@@ -168,6 +185,8 @@ def calculate_huffman_code(message):
 
     print('\nHuffman code tree:')
     pprint(get_huffman_code_tree(sorted_symbols_with_frequency))
+
+    print('\nEntropy:', get_entropy(sorted_symbols_with_frequency.values()))
 
 
 if __name__ == '__main__':

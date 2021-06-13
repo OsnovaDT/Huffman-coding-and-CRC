@@ -6,9 +6,6 @@ from math import log2
 
 
 MESSAGE = "Communication systems with over-the-air-programming"
-# MESSAGE = "the art. Such systems quite often reprogram information"
-# MESSAGE = "hello"
-# MESSAGE = "aabbbbbbbbccccdeeeee"
 
 
 def get_symbols_with_frequency(message):
@@ -23,19 +20,19 @@ def get_symbols_with_frequency(message):
     return dict(symbols_with_frequency)
 
 
-def get_symbols_probability(symbols_with_frequency):
+def get_symbols_with_probability(symbols_with_frequency):
     """Get probability for symbols in the message"""
 
-    symbols_probability = dict()
+    symbols_with_probability = dict()
     message_length = sum(symbols_with_frequency.values())
 
     for symbol, symbol_frequency in symbols_with_frequency.items():
         probability_for_current_symbol = get_probability_for_symbol(
             symbol_frequency, message_length
         )
-        symbols_probability[symbol] = probability_for_current_symbol
+        symbols_with_probability[symbol] = probability_for_current_symbol
 
-    return symbols_probability
+    return symbols_with_probability
 
 
 def get_probability_for_symbol(symbol_frequency, message_length):
@@ -58,7 +55,7 @@ def get_sorted_symbols_with_frequency(
 
 
 def print_frequency_and_probability_for_symbols(
-        symbols_with_frequency, symbols_probability):
+        symbols_with_frequency, symbols_with_probability):
     """Print frequency and probability for symbols"""
 
     sorted_symbols_with_frequency = get_sorted_symbols_with_frequency(
@@ -70,7 +67,7 @@ def print_frequency_and_probability_for_symbols(
 
     for symbol in symbols:
         symbol_frequency = sorted_symbols_with_frequency[symbol]
-        symbol_probability = symbols_probability[symbol]
+        symbol_probability = symbols_with_probability[symbol]
 
         print(f"{symbol}\t{symbol_frequency}\t\t{symbol_probability}")
 
@@ -167,37 +164,56 @@ def get_entropy(frequency_for_symbols):
     return round(entropy, 5)
 
 
+def get_average_length_of_code_message(
+        symbols_with_code, symbols_with_frequency):
+    """Get average length of code message"""
+
+    average_length_of_code_message = 0
+    message_length = sum(symbols_with_frequency.values())
+
+    for symbol, frequency in symbols_with_frequency.items():
+        symbol_code_length = len(symbols_with_code[symbol])
+        symbol_probability = get_probability_for_symbol(
+            frequency, message_length
+        )
+
+        average_length_of_code_message += symbol_code_length * \
+            symbol_probability
+
+    return round(average_length_of_code_message, 5)
+
+
 def is_tree(object_):
     """Check if this object is a tree"""
 
     return isinstance(object_, tuple)
 
 
-def get_huffman_code(symbols_and_code, message):
+def get_huffman_code(symbols_with_code, message):
     """Get string with Huffman code"""
 
     huffman_code = ''
 
     for symbol in message:
-        huffman_code += symbols_and_code[symbol]
+        huffman_code += symbols_with_code[symbol]
 
     return huffman_code
 
 
-def get_symbols_and_code(code_tree, symbols_and_code, current_code=''):
+def get_symbols_and_code(code_tree, symbols_with_code, current_code=''):
     """Get symbols and code for them"""
 
     left_node, right_node = code_tree[0], code_tree[1]
 
     if is_tree(left_node) and is_tree(right_node):
         get_symbols_and_code(
-            left_node, symbols_and_code, current_code + '0'
+            left_node, symbols_with_code, current_code + '0'
         )
         get_symbols_and_code(
-            right_node, symbols_and_code, current_code + '1'
+            right_node, symbols_with_code, current_code + '1'
         )
 
-        return symbols_and_code
+        return symbols_with_code
 
     if is_tree(left_node):
         new_code_tree = left_node
@@ -210,14 +226,14 @@ def get_symbols_and_code(code_tree, symbols_and_code, current_code=''):
         current_code = current_code + '1'
         symbol = left_node
     else:
-        symbols_and_code[left_node] = current_code + '0'
-        symbols_and_code[right_node] = current_code + '1'
+        symbols_with_code[left_node] = current_code + '0'
+        symbols_with_code[right_node] = current_code + '1'
 
-        return symbols_and_code
+        return symbols_with_code
 
-    symbols_and_code[symbol] = code_for_symbol
+    symbols_with_code[symbol] = code_for_symbol
 
-    return get_symbols_and_code(new_code_tree, symbols_and_code, current_code)
+    return get_symbols_and_code(new_code_tree, symbols_with_code, current_code)
 
 
 def main(message):
@@ -229,17 +245,23 @@ def main(message):
     sorted_symbols_with_frequency = get_sorted_symbols_with_frequency(
         symbols_with_frequency, False
     )
-    symbols_probability = get_symbols_probability(symbols_with_frequency)
+    symbols_with_probability = get_symbols_with_probability(
+        symbols_with_frequency
+    )
     code_tree = get_huffman_code_tree(sorted_symbols_with_frequency)
-    symbols_and_code = get_symbols_and_code(*code_tree, {})
-    huffman_code = get_huffman_code(symbols_and_code, message)
+    symbols_with_code = get_symbols_and_code(*code_tree, {})
+    average_length_of_code_message = get_average_length_of_code_message(
+        symbols_with_code, symbols_with_frequency
+    )
+    entropy = get_entropy(symbols_with_frequency.values())
+    huffman_code = get_huffman_code(symbols_with_code, message)
 
     print_frequency_and_probability_for_symbols(
-        symbols_with_frequency, symbols_probability
+        symbols_with_frequency, symbols_with_probability
     )
-    print('\nEntropy:', get_entropy(sorted_symbols_with_frequency.values()))
-    print('\nHuffman code:')
-    print(huffman_code)
+    print('\nEntropy:', entropy)
+    print('\nAverage length of code message:', average_length_of_code_message)
+    print('\nHuffman code:', huffman_code)
 
 
 if __name__ == '__main__':

@@ -1,20 +1,17 @@
 """Calculate CRC code"""
 
 from collections import defaultdict
-from re import findall
-from pprint import pprint
 from random import randint
+from re import findall
 
 
-MESSAGE = 'A4678FE1'
-
+HEX_MESSAGE = 'A4678FE1'
 POLYNOMIAL = 'x^10 + x^9 + x^5 + x^4 + x + 1'
 
 
 def get_truncated_to_4_symbols_binary_code(binary_code):
     """Delete excess zeroes and add symbols if it's need"""
 
-    # TODO: Refactoring
     binary_code = binary_code.lstrip('0')
 
     binary_code = binary_code.zfill(4)
@@ -34,7 +31,7 @@ def get_symbol_binary_code(symbol):
     return symbol_binary_code
 
 
-def get_binary_code_from_hex(hex_code):
+def get_binary_message_from_hex(hex_code):
     """Get binary code from 16 bit code"""
 
     binary_code = ''
@@ -47,13 +44,15 @@ def get_binary_code_from_hex(hex_code):
     return binary_code
 
 
-def get_w(polynomial):
+def get_degree_of_polynomial(polynomial):
+    """Get position of the highest single bit"""
+
     polynomial_items = polynomial.split(' + ')
 
     return int(findall('\d+', polynomial_items[0])[0])
 
 
-def get_binary_code_from_polynomial(polynomial):
+def get_binary_code_for_polynomial(polynomial):
     """Get binary code from polynomial"""
 
     # TODO: Refactoring
@@ -129,39 +128,93 @@ def check_message(message, binary_code_for_polynomial):
     print(get_crc_code(message, binary_code_for_polynomial))
 
 
-def main():
-    # print('Binary code for message: ')
-    binary_code_for_message = get_binary_code_from_hex(MESSAGE)
-    w = get_w(POLYNOMIAL)
-    binary_code_for_message = binary_code_for_message + '0' * w
-    # print(binary_code_for_message)
-    # print()
+def get_full_binary_message(incomplete_binary_message, polynomial):
+    """Get binary message supplemented with bits"""
 
-    # print('Binary code for polynomial: ')
-    binary_code_for_polynomial = get_binary_code_from_polynomial(POLYNOMIAL)
-    # print(binary_code_for_polynomial)
+    degree_of_polynomial = get_degree_of_polynomial(polynomial)
+    additional_zeros_for_binary_message = '0' * degree_of_polynomial
+    full_binary_message = incomplete_binary_message + \
+        additional_zeros_for_binary_message
+
+    return full_binary_message
+
+
+def is_binary_message_with_crc_correct(
+        binary_message_with_crc, binary_code_for_polynomial):
+    """Check is binary message with CRC code correct"""
+
+    print(f'\nCheck for message {binary_message_with_crc}')
 
     crc_code = get_crc_code(
-        binary_code_for_message, binary_code_for_polynomial
+        binary_message_with_crc,
+        binary_code_for_polynomial
     )
 
-    binary_code_for_message = get_binary_code_from_hex(MESSAGE)
-    binary_code_for_message = binary_code_for_message + crc_code
+    if crc_code == '0':
+        print('Binary message with CRC is correct')
+    else:
+        print('Binary message with CRC is incorrect')
 
-    # Check message correct
-    print('Correct:')
-    print(get_crc_code(binary_code_for_message, binary_code_for_polynomial))
 
-    # Check message incorrect
-    binary_code_for_message = binary_code_for_message
-    rand = randint(0, len(binary_code_for_message) - 1)
+def get_opposite_byte(byte):
+    """Convert byte to 0 if it's 1 and vice versa"""
 
-    rand_item = binary_code_for_message[rand]
-    rand_item = '0' if rand_item == '1' else '1'
-    binary_code_for_message = binary_code_for_message[:rand] + \
-        rand_item + binary_code_for_message[rand+1:]
-    print(get_crc_code(binary_code_for_message, binary_code_for_polynomial))
+    return '0' if byte == '1' else '1'
+
+
+def get_incorrect_binary_message_with_crc(binary_message):
+    """Get binary message with CRC with random mistake"""
+
+    correct_byte_index = randint(0, len(binary_message) - 1)
+    correct_byte = binary_message[correct_byte_index]
+
+    invalid_byte = get_opposite_byte(correct_byte)
+    incorrect_binary_message_with_crc = binary_message[:correct_byte_index] + \
+        invalid_byte + binary_message[correct_byte_index+1:]
+
+    return incorrect_binary_message_with_crc
+
+
+def check_correct_and_incorrect_binary_message_with_crc(
+        binary_message_with_crc, binary_code_for_polynomial):
+    """Check correct and incorrect binary message with crc"""
+
+    is_binary_message_with_crc_correct(
+        binary_message_with_crc, binary_code_for_polynomial
+    )
+
+    incorrect_binary_message_with_crc = get_incorrect_binary_message_with_crc(
+        binary_message_with_crc
+    )
+    is_binary_message_with_crc_correct(
+        incorrect_binary_message_with_crc, binary_code_for_polynomial
+    )
+
+
+def print_all_info_for_crc_code():
+    """Print all info for CRC code"""
+
+    incomplete_binary_message = get_binary_message_from_hex(HEX_MESSAGE)
+    full_binary_message = get_full_binary_message(
+        incomplete_binary_message, POLYNOMIAL
+    )
+
+    binary_code_for_polynomial = get_binary_code_for_polynomial(POLYNOMIAL)
+
+    crc_code = get_crc_code(
+        full_binary_message, binary_code_for_polynomial
+    )
+    print(f'CRC code: {crc_code}')
+
+    binary_message_with_crc = incomplete_binary_message + crc_code
+
+    check_correct_and_incorrect_binary_message_with_crc(
+        binary_message_with_crc, binary_code_for_polynomial
+    )
 
 
 if __name__ == '__main__':
-    main()
+    print_all_info_for_crc_code()
+
+
+# 168 - before Refactoring

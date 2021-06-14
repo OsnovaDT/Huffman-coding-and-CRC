@@ -32,22 +32,24 @@ def get_binary_message_from_hex_message(hex_message):
     return binary_message
 
 
-def get_degree_of_polynomial(polynomial):
-    """Get position of the highest single bit"""
+def get_polynomial_degree(polynomial):
+    """Get polynomial degree - position of the highest single bit"""
 
     polynomial_items = polynomial.split(' + ')
+    first_polynomial_item = polynomial_items[0]
+    number_for_first_polynomial_item = findall('\d+', first_polynomial_item)
+    polynomial_degree = int(*number_for_first_polynomial_item)
 
-    return int(findall('\d+', polynomial_items[0])[0])
+    return polynomial_degree
 
 
 def get_binary_code_for_polynomial(polynomial):
     """Get binary code from polynomial"""
 
-    # TODO: Refactoring
     polynomial_items = polynomial.split(' + ')
     polynomial_item_and_binary_code = defaultdict(str)
 
-    w = int(findall('\d+', polynomial_items[0])[0])
+    polynomial_degree = get_polynomial_degree(polynomial)
 
     for item in polynomial_items:
         if item == 'x':
@@ -59,13 +61,13 @@ def get_binary_code_for_polynomial(polynomial):
             polynomial_item_and_binary_code[int(
                 polynomial_item_number[0])] = '1'
 
-    for i in range(w + 1):
+    for i in range(polynomial_degree + 1):
         if i not in polynomial_item_and_binary_code.keys():
             polynomial_item_and_binary_code[i] = '0'
 
     a = ''
 
-    for i in range(w + 1):
+    for i in range(polynomial_degree + 1):
         a += polynomial_item_and_binary_code[i]
 
     return a[::-1]
@@ -119,7 +121,7 @@ def check_message(message, binary_code_for_polynomial):
 def get_full_binary_message(incomplete_binary_message, polynomial):
     """Get binary message supplemented with bits"""
 
-    degree_of_polynomial = get_degree_of_polynomial(polynomial)
+    degree_of_polynomial = get_polynomial_degree(polynomial)
     additional_zeros_for_binary_message = '0' * degree_of_polynomial
     full_binary_message = incomplete_binary_message + \
         additional_zeros_for_binary_message

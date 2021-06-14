@@ -9,39 +9,27 @@ HEX_MESSAGE = 'A4678FE1'
 POLYNOMIAL = 'x ^ 10 + x ^ 9 + x ^ 5 + x ^ 4 + x + 1'
 
 
-def get_truncated_to_4_symbols_binary_code(binary_code):
-    """Delete excess zeroes and add symbols if it's need"""
+def get_binary_code_from_hex_code(hex_code):
+    """Get binary code from hex code"""
 
-    binary_code = binary_code.lstrip('0')
-
+    binary_code = bin(int(hex_code, 16))
+    binary_code = binary_code.replace('0b', '')
     binary_code = binary_code.zfill(4)
 
     return binary_code
 
 
-def get_symbol_binary_code(symbol):
-    """Get binary code for symbol"""
+def get_binary_message_from_hex_message(hex_message):
+    """Get binary message from hex message"""
 
-    symbol_binary_code = (bin(int(symbol, 16))).replace('b', '')
+    binary_message = ''
 
-    symbol_binary_code = get_truncated_to_4_symbols_binary_code(
-        symbol_binary_code
-    )
+    for hex_code in hex_message:
+        binary_code = get_binary_code_from_hex_code(hex_code)
 
-    return symbol_binary_code
+        binary_message += binary_code
 
-
-def get_binary_message_from_hex(hex_code):
-    """Get binary code from 16 bit code"""
-
-    binary_code = ''
-
-    for symbol in hex_code:
-        symbol_binary_code = get_symbol_binary_code(symbol)
-
-        binary_code += symbol_binary_code
-
-    return binary_code
+    return binary_message
 
 
 def get_degree_of_polynomial(polynomial):
@@ -194,7 +182,9 @@ def check_correct_and_incorrect_binary_message_with_crc(
 def print_all_info_for_crc_code(hex_message, polynomial):
     """Print all info for CRC code"""
 
-    incomplete_binary_message = get_binary_message_from_hex(hex_message)
+    incomplete_binary_message = get_binary_message_from_hex_message(
+        hex_message
+    )
     full_binary_message = get_full_binary_message(
         incomplete_binary_message, polynomial
     )

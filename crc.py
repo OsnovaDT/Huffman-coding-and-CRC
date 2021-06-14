@@ -6,7 +6,7 @@ from re import findall
 
 
 HEX_MESSAGE = 'A4678FE1'
-POLYNOMIAL = 'x^10 + x^9 + x^5 + x^4 + x + 1'
+POLYNOMIAL = 'x ^ 10 + x ^ 9 + x ^ 5 + x ^ 4 + x + 1'
 
 
 def get_truncated_to_4_symbols_binary_code(binary_code):
@@ -191,15 +191,15 @@ def check_correct_and_incorrect_binary_message_with_crc(
     )
 
 
-def print_all_info_for_crc_code():
+def print_all_info_for_crc_code(hex_message, polynomial):
     """Print all info for CRC code"""
 
-    incomplete_binary_message = get_binary_message_from_hex(HEX_MESSAGE)
+    incomplete_binary_message = get_binary_message_from_hex(hex_message)
     full_binary_message = get_full_binary_message(
-        incomplete_binary_message, POLYNOMIAL
+        incomplete_binary_message, polynomial
     )
 
-    binary_code_for_polynomial = get_binary_code_for_polynomial(POLYNOMIAL)
+    binary_code_for_polynomial = get_binary_code_for_polynomial(polynomial)
 
     crc_code = get_crc_code(
         full_binary_message, binary_code_for_polynomial
@@ -214,7 +214,7 @@ def print_all_info_for_crc_code():
 
 
 if __name__ == '__main__':
-    print_all_info_for_crc_code()
+    print_all_info_for_crc_code(HEX_MESSAGE, POLYNOMIAL)
 
 
 # 168 - before Refactoring

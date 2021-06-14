@@ -200,16 +200,16 @@ def get_huffman_code(symbols_with_code, message):
     return huffman_code
 
 
-def get_symbols_and_code(code_tree, symbols_with_code, current_code=''):
+def get_symbols_with_code(code_tree, symbols_with_code, current_code=''):
     """Get symbols and code for them"""
 
     left_node, right_node = code_tree[0], code_tree[1]
 
     if is_tree(left_node) and is_tree(right_node):
-        get_symbols_and_code(
+        get_symbols_with_code(
             left_node, symbols_with_code, current_code + '0'
         )
-        get_symbols_and_code(
+        get_symbols_with_code(
             right_node, symbols_with_code, current_code + '1'
         )
 
@@ -233,11 +233,11 @@ def get_symbols_and_code(code_tree, symbols_with_code, current_code=''):
 
     symbols_with_code[symbol] = code_for_symbol
 
-    return get_symbols_and_code(new_code_tree, symbols_with_code, current_code)
+    return get_symbols_with_code(new_code_tree, symbols_with_code, current_code)
 
 
-def main(message):
-    """Calculate everything for Huffman code"""
+def print_all_info_for_huffman_code(message):
+    """Print all info for Huffman code"""
 
     print(f'Initial message: {message}\n')
 
@@ -249,7 +249,7 @@ def main(message):
         symbols_with_frequency
     )
     code_tree = get_huffman_code_tree(sorted_symbols_with_frequency)
-    symbols_with_code = get_symbols_and_code(*code_tree, {})
+    symbols_with_code = get_symbols_with_code(*code_tree, {})
     average_length_of_code_message = get_average_length_of_code_message(
         symbols_with_code, symbols_with_frequency
     )
@@ -265,4 +265,4 @@ def main(message):
 
 
 if __name__ == '__main__':
-    main(MESSAGE)
+    print_all_info_for_huffman_code(MESSAGE)

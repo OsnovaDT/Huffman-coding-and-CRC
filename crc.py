@@ -5,6 +5,9 @@ from random import randint
 from re import findall
 
 
+from colorama import Fore
+
+
 HEX_MESSAGE = 'A4678FE1'
 POLYNOMIAL = 'x ^ 10 + x ^ 9 + x ^ 5 + x ^ 4 + x + 1'
 
@@ -37,47 +40,81 @@ def get_polynomial_degree(polynomial):
 
     polynomial_items = polynomial.split(' + ')
     first_polynomial_item = polynomial_items[0]
-    number_for_first_polynomial_item = findall('\d+', first_polynomial_item)
+    number_for_first_polynomial_item = findall(r'\d+', first_polynomial_item)
     polynomial_degree = int(*number_for_first_polynomial_item)
 
     return polynomial_degree
 
 
-def get_binary_code_for_polynomial(polynomial):
-    """Get binary code from polynomial"""
-
-    polynomial_items = polynomial.split(' + ')
-    polynomial_item_and_binary_code = defaultdict(str)
-
-    polynomial_degree = get_polynomial_degree(polynomial)
+def set_byte_1_for_exist_polynomial_items(
+        polynomial_items, polynomial_item_degree_with_binary_code):
+    """Set byte 1 for exist polynomial items"""
 
     for item in polynomial_items:
         if item == 'x':
-            polynomial_item_and_binary_code[1] = '1'
+            polynomial_item_degree_with_binary_code[1] = '1'
         elif item == '1':
-            polynomial_item_and_binary_code[0] = '1'
+            polynomial_item_degree_with_binary_code[0] = '1'
         else:
-            polynomial_item_number = findall('\d+', item)
-            polynomial_item_and_binary_code[int(
-                polynomial_item_number[0])] = '1'
-
-    for i in range(polynomial_degree + 1):
-        if i not in polynomial_item_and_binary_code.keys():
-            polynomial_item_and_binary_code[i] = '0'
-
-    a = ''
-
-    for i in range(polynomial_degree + 1):
-        a += polynomial_item_and_binary_code[i]
-
-    return a[::-1]
+            polynomial_item_degree = int(findall(r'\d+', item)[0])
+            polynomial_item_degree_with_binary_code[
+                polynomial_item_degree
+            ] = '1'
 
 
-def get_quotient_of_two_binary_codes(first, second):
+def set_byte_0_for_non_exist_polynomial_items(
+        polynomial_degree, degrees_of_items_of_polynomial,
+        polynomial_item_degree_with_binary_code):
+    """Set byte 1 for exist polynomial items"""
+
+    for degree in range(polynomial_degree + 1):
+        if degree not in degrees_of_items_of_polynomial:
+            polynomial_item_degree_with_binary_code[degree] = '0'
+
+
+def get_binary_code_for_polynomial(polynomial):
+    """Get binary code from polynomial"""
+
+    polynomial_degree = get_polynomial_degree(polynomial)
+    polynomial_items_with_bytes = get_polynomial_items_with_bytes(polynomial)
+    binary_code_for_polynomial = ''
+    polynomial_degrees = range(polynomial_degree + 1)[::-1]
+
+    for degree in polynomial_degrees:
+        polynomial_degree_binary_code = polynomial_items_with_bytes[degree]
+        binary_code_for_polynomial += polynomial_degree_binary_code
+
+    return binary_code_for_polynomial
+
+
+def get_polynomial_items_with_bytes(polynomial):
+    """Get dict that contains polynomial items and their bytes"""
+
+    polynomial_items = polynomial.split(' + ')
+    polynomial_items_with_bytes = defaultdict(str)
+    polynomial_degree = get_polynomial_degree(polynomial)
+
+    set_byte_1_for_exist_polynomial_items(
+        polynomial_items, polynomial_items_with_bytes
+    )
+
+    degrees_of_items_of_polynomial = polynomial_items_with_bytes.keys()
+
+    set_byte_0_for_non_exist_polynomial_items(
+        polynomial_degree, degrees_of_items_of_polynomial,
+        polynomial_items_with_bytes
+    )
+
+    return polynomial_items_with_bytes
+
+
+def get_quotient_of_two_binary_codes(first_binary_code, second_binary_code):
+    """Get quotient of two binary codes"""
+
     quotient = ''
 
-    for code in range(len(second)):
-        if first[code] == second[code]:
+    for code, _ in enumerate(second_binary_code):
+        if first_binary_code[code] == second_binary_code[code]:
             quotient = quotient + '0'
         else:
             quotient = quotient + '1'
@@ -87,6 +124,8 @@ def get_quotient_of_two_binary_codes(first, second):
 
 
 def get_crc_code(divisible, divisor):
+    """Get CRC code"""
+
     divisor_length = len(divisor)
 
     divisible_initial_part = divisible[:divisor_length]
@@ -114,14 +153,9 @@ def get_crc_code(divisible, divisor):
     return quotient
 
 
-def check_message(message, binary_code_for_polynomial):
-    print(get_crc_code(message, binary_code_for_polynomial))
-
-
-def get_full_binary_message(incomplete_binary_message, polynomial):
+def get_full_binary_message(incomplete_binary_message, degree_of_polynomial):
     """Get binary message supplemented with bits"""
 
-    degree_of_polynomial = get_polynomial_degree(polynomial)
     additional_zeros_for_binary_message = '0' * degree_of_polynomial
     full_binary_message = incomplete_binary_message + \
         additional_zeros_for_binary_message
@@ -159,8 +193,10 @@ def get_incorrect_binary_message_with_crc(binary_message):
     correct_byte = binary_message[correct_byte_index]
 
     invalid_byte = get_opposite_byte(correct_byte)
+
     incorrect_binary_message_with_crc = binary_message[:correct_byte_index] + \
-        invalid_byte + binary_message[correct_byte_index+1:]
+        Fore.RED + invalid_byte + Fore.WHITE + \
+        binary_message[correct_byte_index+1:]
 
     return incorrect_binary_message_with_crc
 
@@ -187,8 +223,9 @@ def print_all_info_for_crc_code(hex_message, polynomial):
     incomplete_binary_message = get_binary_message_from_hex_message(
         hex_message
     )
+    degree_of_polynomial = get_polynomial_degree(polynomial)
     full_binary_message = get_full_binary_message(
-        incomplete_binary_message, polynomial
+        incomplete_binary_message, degree_of_polynomial
     )
 
     binary_code_for_polynomial = get_binary_code_for_polynomial(polynomial)
@@ -207,6 +244,3 @@ def print_all_info_for_crc_code(hex_message, polynomial):
 
 if __name__ == '__main__':
     print_all_info_for_crc_code(HEX_MESSAGE, POLYNOMIAL)
-
-
-# 168 - before Refactoring

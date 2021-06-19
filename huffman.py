@@ -149,9 +149,11 @@ def delete_first_2_nodes(tree):
     del tree_frequency[0]
 
 
-def get_entropy(frequency_for_symbols):
+def get_entropy(message):
     """Get entropy"""
 
+    symbols_with_frequency = get_symbols_with_frequency(message)
+    frequency_for_symbols = symbols_with_frequency.values()
     entropy = 0
     message_length = sum(frequency_for_symbols)
 
@@ -253,7 +255,7 @@ def print_all_info_for_huffman_code(message):
     average_length_of_code_message = get_average_length_of_code_message(
         symbols_with_code, symbols_with_frequency
     )
-    entropy = get_entropy(symbols_with_frequency.values())
+    entropy = get_entropy(message)
     huffman_code = get_huffman_code(symbols_with_code, message)
 
     print_frequency_and_probability_for_symbols(

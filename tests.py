@@ -13,7 +13,7 @@ from huffman import (
     is_tree_built, delete_first_2_nodes, get_entropy,
     print_frequency_and_probability_for_symbols, get_symbols_with_code,
     get_average_length_of_code_message, get_huffman_code,
-    print_all_info_for_huffman_code,
+    print_all_info_for_huffman_code, get_new_node_created_by_first_2_nodes,
 )
 
 # Data for testing
@@ -262,6 +262,23 @@ UNBUILT_TREES = (
     [[('e', 'b')], [1, 1, 2]],
     [[(('e', 'b'), ('a', 'c'))], [4, 1, 2, 5, 2]]
 )
+
+TEST_TREES_AND_EXPECTED_NEW_NODES = [
+    ([
+        ['C', 'u', 'c', 'y', 'w', 'v', 'p', 'h', 'g', 'n', 'a', ' ', 's', 'e', '-', 'o', 't', 'r', 'm', 'i'],
+        [1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5]
+    ], (('C', 'u'), 2)),
+    ([
+        ['-', ('h', 'g'), (('c', 'y'), ('C', 'u')), 'o', 't', 'r', 'm', 'i', ('s', 'e'), ('a', ' '), (('p', ('w', 'v')), 'n')],
+        [3, 4, 4, 4, 4, 4, 5, 5, 6, 6, 6]
+    ], (('-', ('h', 'g')), 7)),
+    (
+        [
+            [((('p', ('w', 'v')), 'n'), ('-', ('h', 'g'))), (('t', 'r'), ((('c', 'y'), ('C', 'u')), 'o')), (('m', 'i'), (('s', 'e'), ('a', ' ')))], [13, 16, 22]
+        ],
+        ((((('p', ('w', 'v')), 'n'), ('-', ('h', 'g'))), (('t', 'r'), ((('c', 'y'), ('C', 'u')), 'o'))), 29)
+    )
+]
 
 # Data for testing delete_first_2_nodes function
 TREE_BEFORE_AND_AFTER_FIRST_2_NODES_DELETING = (
@@ -568,3 +585,11 @@ class TestHuffmanCode(TestCase):
                         call('\nHuffman code:', EXPECTED_HUFFMAN_CODE[i]),
                     ]
                 )
+
+    def test_get_new_node_created_by_first_2_nodes(self):
+        """Test get_new_node_created_by_first_2_nodes function"""
+
+        for tree, expected_new_nodes in TEST_TREES_AND_EXPECTED_NEW_NODES:
+            real_new_nodes = get_new_node_created_by_first_2_nodes(tree)
+
+            self.assertEqual(real_new_nodes, expected_new_nodes)

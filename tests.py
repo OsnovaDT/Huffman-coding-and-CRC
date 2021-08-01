@@ -11,6 +11,7 @@ from huffman import (
     is_tree, get_huffman_code_tree, get_tree_nodes_and_frequency,
     is_tree_built, delete_first_2_nodes, get_entropy,
     print_frequency_and_probability_for_symbols,
+    get_average_length_of_code_message,
 )
 
 # Data for testing
@@ -133,6 +134,25 @@ EXPECTED_ENTROPY_FOR_MESSAGE_4 = 0
 
 EXPECTED_ENTROPY_FOR_MESSAGE_5 = 1
 
+# Symbols with code
+SYMBOLS_WITH_CODE_FOR_MESSAGE_1 = {
+    'b': '0', 'e': '10', 'c': '111', 'd': '1100', 'a': '1101'
+}
+
+SYMBOLS_WITH_CODE_FOR_MESSAGE_2 = {
+    'b': '00', ' ': '010', 'o': '011', 'e': '11',
+    'p': '101', 'r': '1000', '!': '1001'
+}
+
+SYMBOLS_WITH_CODE_FOR_MESSAGE_3 = {
+    'm': '000', 'i': '001', 's': '0100', 'e': '0101', 'a': '0110',
+    ' ': '0111', 'n': '1001', 'p': '10000', 'w': '100010', 'v': '100011',
+    '-': '1010', 'h': '10110', 'g': '10111', 't': '1100', 'r': '1101',
+    'o': '1111', 'c': '111000', 'y': '111001', 'C': '111010', 'u': '111011'
+}
+
+SYMBOLS_WITH_CODE_FOR_MESSAGE_5 = {'a': '0', 'b': '1'}
+
 # Data for testing get_symbols_with_frequency function
 MESSAGE_AND_FREQUENCY = {
     MESSAGE_1: EXPECTED_FREQUENCY_FOR_MESSAGE_1,
@@ -247,6 +267,21 @@ MESSAGE_AND_ENTROPY = {
     MESSAGE_5: EXPECTED_ENTROPY_FOR_MESSAGE_5,
 }
 
+AVERAGE_LENGTH_AND_SYMBOLS_WITH_CODE_WITH_FREQUENCY = {
+    2.1: [
+        SYMBOLS_WITH_CODE_FOR_MESSAGE_1, EXPECTED_FREQUENCY_FOR_MESSAGE_1
+    ],
+    2.66667: [
+        SYMBOLS_WITH_CODE_FOR_MESSAGE_2, EXPECTED_FREQUENCY_FOR_MESSAGE_2
+    ],
+    4.13729: [
+        SYMBOLS_WITH_CODE_FOR_MESSAGE_3, EXPECTED_FREQUENCY_FOR_MESSAGE_3
+    ],
+    1.0: [
+        SYMBOLS_WITH_CODE_FOR_MESSAGE_5, EXPECTED_FREQUENCY_FOR_MESSAGE_5
+    ],
+}
+
 class TestHuffmanCode(TestCase):
     """Class with tests for Huffman code"""
 
@@ -282,7 +317,6 @@ class TestHuffmanCode(TestCase):
                     expected_symbol_probability
                 )
 
-    # TODO:
     def test_get_sorted_symbols_with_frequency(self):
         """Test get_sorted_symbols_with_frequency function"""
 
@@ -377,6 +411,22 @@ class TestHuffmanCode(TestCase):
         """Test get_entropy function"""
 
         for message, expected_entropy in MESSAGE_AND_ENTROPY.items():
-            real_entropy = get_entropy(message)
+            with self.subTest(f'Expected entropy: {expected_entropy}'):
+                real_entropy = get_entropy(message)
 
-            self.assertEqual(real_entropy, expected_entropy)
+                self.assertEqual(real_entropy, expected_entropy)
+
+    def test_get_average_length_of_code_message(self):
+        """Test get_average_length_of_code_message function"""
+
+        for expected_average_length, data in \
+                AVERAGE_LENGTH_AND_SYMBOLS_WITH_CODE_WITH_FREQUENCY.items():
+            symbols_with_code = data[0]
+            frequency = data[1]
+
+            with self.subTest(f'Expected average length: {expected_average_length}'):
+                real_average_length = get_average_length_of_code_message(
+                    symbols_with_code, frequency
+                )
+
+                self.assertEqual(real_average_length, expected_average_length)

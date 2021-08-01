@@ -9,8 +9,8 @@ from huffman import (
     get_symbols_with_frequency, get_symbols_with_probability,
     get_probability_for_symbol, get_sorted_symbols_with_frequency,
     is_tree, get_huffman_code_tree, get_tree_nodes_and_frequency,
-    is_tree_built, delete_first_2_nodes,
-    print_frequency_and_probability_for_symbols
+    is_tree_built, delete_first_2_nodes, get_entropy,
+    print_frequency_and_probability_for_symbols,
 )
 
 # Data for testing
@@ -122,6 +122,17 @@ EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_4 = ([], [])
 
 EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_5 = (['a', 'b'], [1, 1])
 
+# Entropy
+EXPECTED_ENTROPY_FOR_MESSAGE_1 = 2.04145
+
+EXPECTED_ENTROPY_FOR_MESSAGE_2 = 2.65657
+
+EXPECTED_ENTROPY_FOR_MESSAGE_3 = 4.10876
+
+EXPECTED_ENTROPY_FOR_MESSAGE_4 = 0
+
+EXPECTED_ENTROPY_FOR_MESSAGE_5 = 1
+
 # Data for testing get_symbols_with_frequency function
 MESSAGE_AND_FREQUENCY = {
     MESSAGE_1: EXPECTED_FREQUENCY_FOR_MESSAGE_1,
@@ -226,6 +237,15 @@ probability_and_frequency_with_sorted_frequency = (
         (EXPECTED_FREQUENCY_FOR_MESSAGE_5, SORTED_FREQUENCY_FOR_MESSAGE_5)
     ),
 )
+
+# Data for testing get_entropy function
+MESSAGE_AND_ENTROPY = {
+    MESSAGE_1: EXPECTED_ENTROPY_FOR_MESSAGE_1,
+    MESSAGE_2: EXPECTED_ENTROPY_FOR_MESSAGE_2,
+    MESSAGE_3: EXPECTED_ENTROPY_FOR_MESSAGE_3,
+    MESSAGE_4: EXPECTED_ENTROPY_FOR_MESSAGE_4,
+    MESSAGE_5: EXPECTED_ENTROPY_FOR_MESSAGE_5,
+}
 
 class TestHuffmanCode(TestCase):
     """Class with tests for Huffman code"""
@@ -352,3 +372,11 @@ class TestHuffmanCode(TestCase):
                         call('Symbol\tFrequency\tProbability\n'),
                     ] + letter_calls
                 )
+
+    def test_get_entropy(self):
+        """Test get_entropy function"""
+
+        for message, expected_entropy in MESSAGE_AND_ENTROPY.items():
+            real_entropy = get_entropy(message)
+
+            self.assertEqual(real_entropy, expected_entropy)

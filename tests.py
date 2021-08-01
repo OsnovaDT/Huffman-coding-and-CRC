@@ -8,7 +8,7 @@ from huffman import (
     get_symbols_with_frequency, get_symbols_with_probability,
     get_probability_for_symbol, get_sorted_symbols_with_frequency,
     is_tree, get_huffman_code_tree, get_tree_nodes_and_frequency,
-    is_tree_built
+    is_tree_built, delete_first_2_nodes
 )
 
 # Data for testing
@@ -193,6 +193,14 @@ UNBUILT_TREES = (
     [[(('e', 'b'), ('a', 'c'))], [4, 1, 2, 5, 2]]
 )
 
+# Data for testing delete_first_2_nodes function
+TREE_BEFORE_AND_AFTER_FIRST_2_NODES_DELETING = (
+    ([['b', 'e', 'c', 'a', 'd'], [8, 5, 4, 2, 1]], [['c', 'a', 'd'], [4, 2, 1]]),
+    ([['c', 'a', 'd', ('b', 'e')], [4, 2, 1, 13]], [['d', ('b', 'e')], [1, 13]]),
+    ([['d', ('c', 'a'), ('b', 'e')], [1, 6, 13]], [[('b', 'e')], [13]]),
+    ([[('d', ('c', 'a')), ('b', 'e')], [7, 13]], [[], []]),
+)
+
 class TestHuffmanCode(TestCase):
     """Class with tests for Huffman code"""
 
@@ -279,3 +287,12 @@ class TestHuffmanCode(TestCase):
         for unbuilt_tree in UNBUILT_TREES:
             with self.subTest(f'Tree: {unbuilt_tree}'):
                 self.assertFalse(is_tree_built(unbuilt_tree))
+
+    def test_delete_first_2_nodes(self):
+        """Test delete_first_2_nodes function"""
+
+        for tree, expected_tree_after_deleting in TREE_BEFORE_AND_AFTER_FIRST_2_NODES_DELETING:
+            with self.subTest(f'Expected tree: {expected_tree_after_deleting}'):
+                delete_first_2_nodes(tree)
+
+                self.assertEqual(tree, expected_tree_after_deleting)

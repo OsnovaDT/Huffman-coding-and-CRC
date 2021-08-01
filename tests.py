@@ -7,7 +7,7 @@ from unittest import TestCase
 from huffman import (
     get_symbols_with_frequency, get_symbols_with_probability,
     get_probability_for_symbol, get_sorted_symbols_with_frequency,
-    is_tree, get_huffman_code_tree
+    is_tree, get_huffman_code_tree, get_tree_nodes_and_frequency
 )
 
 # Data for testing
@@ -84,7 +84,6 @@ EXPECTED_PROBABILITY_FOR_MESSAGE_4 = {}
 EXPECTED_PROBABILITY_FOR_MESSAGE_5 = {'a': 0.5, 'b': 0.5}
 
 # Code tree
-
 EXPECTED_CODE_TREE_FOR_MESSAGE_1 = [(('d', ('c', 'a')), ('b', 'e'))]
 
 EXPECTED_CODE_TREE_FOR_MESSAGE_2 = [(('e', 'b'), (('!', ('o', 'r')), ('p', ' ')))]
@@ -98,6 +97,27 @@ EXPECTED_CODE_TREE_FOR_MESSAGE_3 = [
 EXPECTED_CODE_TREE_FOR_MESSAGE_4 = []
 
 EXPECTED_CODE_TREE_FOR_MESSAGE_5 = [('a', 'b')]
+
+# Nodes and frequency
+EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_1 = (
+    ['a', 'b', 'c', 'd', 'e'], [2, 8, 4, 1, 5]
+)
+
+EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_2 = (
+    ['b', 'e', 'p', ' ', 'o', 'r', '!'], [3, 4, 2, 2, 2, 1, 1]
+)
+
+EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_3 = (
+    [
+        'C', 'o', 'm', 'u', 'n', 'i', 'c', 'a', 't',' ',
+        's','y', 'e','w', 'h', 'v', 'r', '-', 'p', 'g'
+    ],
+    [1, 4, 5, 1, 3, 5, 1, 3, 4, 3, 3, 1, 3, 1, 2, 1, 4, 3, 1, 2]
+)
+
+EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_4 = ([], [])
+
+EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_5 = (['a', 'b'], [1, 1])
 
 # Data for testing get_symbols_with_frequency function
 MESSAGE_AND_FREQUENCY = {
@@ -140,6 +160,14 @@ FREQUENCY_AND_CODE_TREE = (
     (SORTED_FREQUENCY_FOR_MESSAGE_5, EXPECTED_CODE_TREE_FOR_MESSAGE_5),
 )
 
+# Data for testing get_tree_nodes_and_frequency function
+FREQUENCY_AND_NODES_WITH_FREQUENCY = (
+    (EXPECTED_FREQUENCY_FOR_MESSAGE_1, EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_1),
+    (EXPECTED_FREQUENCY_FOR_MESSAGE_2, EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_2),
+    (EXPECTED_FREQUENCY_FOR_MESSAGE_3, EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_3),
+    (EXPECTED_FREQUENCY_FOR_MESSAGE_4, EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_4),
+    (EXPECTED_FREQUENCY_FOR_MESSAGE_5, EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_5),
+)
 
 class TestHuffmanCode(TestCase):
     """Class with tests for Huffman code"""
@@ -204,3 +232,13 @@ class TestHuffmanCode(TestCase):
             real_code_tree = get_huffman_code_tree(frequency)
 
             self.assertEqual(real_code_tree, expected_code_tree)
+
+    def test_get_tree_nodes_and_frequency(self):
+        for frequency, expected_node_and_frequency in FREQUENCY_AND_NODES_WITH_FREQUENCY:
+            with self.subTest(f'Expected: {expected_node_and_frequency}'):
+                code_tree = [
+                    list(frequency.keys()), list(frequency.values())
+                ]
+                real_node_and_frequency = get_tree_nodes_and_frequency(code_tree)
+
+                self.assertEqual(real_node_and_frequency, expected_node_and_frequency)

@@ -13,6 +13,7 @@ from huffman import (
     is_tree_built, delete_first_2_nodes, get_entropy,
     print_frequency_and_probability_for_symbols, get_symbols_with_code,
     get_average_length_of_code_message, get_huffman_code,
+    print_all_info_for_huffman_code,
 )
 
 # Data for testing
@@ -72,6 +73,12 @@ SORTED_FREQUENCY_FOR_MESSAGE_4 = {}
 
 SORTED_FREQUENCY_FOR_MESSAGE_5 = {'a': 1, 'b': 1}
 
+SORTED_FREQUENCIES = [
+    SORTED_FREQUENCY_FOR_MESSAGE_1, SORTED_FREQUENCY_FOR_MESSAGE_2,
+    SORTED_FREQUENCY_FOR_MESSAGE_3, SORTED_FREQUENCY_FOR_MESSAGE_4,
+    SORTED_FREQUENCY_FOR_MESSAGE_5
+]
+
 # Probability
 EXPECTED_PROBABILITY_FOR_MESSAGE_1 = {
     'a': 0.1, 'b': 0.4, 'c': 0.2, 'd': 0.05, 'e': 0.25
@@ -93,6 +100,12 @@ EXPECTED_PROBABILITY_FOR_MESSAGE_3 = {
 EXPECTED_PROBABILITY_FOR_MESSAGE_4 = {}
 
 EXPECTED_PROBABILITY_FOR_MESSAGE_5 = {'a': 0.5, 'b': 0.5}
+
+EXPECTED_PROBABILITIES = [
+    EXPECTED_PROBABILITY_FOR_MESSAGE_1, EXPECTED_PROBABILITY_FOR_MESSAGE_2,
+    EXPECTED_PROBABILITY_FOR_MESSAGE_3, EXPECTED_PROBABILITY_FOR_MESSAGE_4,
+    EXPECTED_PROBABILITY_FOR_MESSAGE_5
+]
 
 # Code tree
 EXPECTED_CODE_TREE_FOR_MESSAGE_1 = [(('d', ('c', 'a')), ('b', 'e'))]
@@ -151,6 +164,12 @@ EXPECTED_ENTROPY_FOR_MESSAGE_3 = 4.10876
 EXPECTED_ENTROPY_FOR_MESSAGE_4 = 0
 
 EXPECTED_ENTROPY_FOR_MESSAGE_5 = 1
+
+EXPECTED_ENTROPIES = [
+    EXPECTED_ENTROPY_FOR_MESSAGE_1, EXPECTED_ENTROPY_FOR_MESSAGE_2,
+    EXPECTED_ENTROPY_FOR_MESSAGE_3, EXPECTED_ENTROPY_FOR_MESSAGE_4,
+    EXPECTED_ENTROPY_FOR_MESSAGE_5
+]
 
 # Symbols with code
 SYMBOLS_WITH_CODE_FOR_MESSAGE_1 = {
@@ -300,6 +319,10 @@ AVERAGE_LENGTH_AND_SYMBOLS_WITH_CODE_WITH_FREQUENCY = {
         SYMBOLS_WITH_CODE_FOR_MESSAGE_5, EXPECTED_FREQUENCY_FOR_MESSAGE_5
     ],
 }
+
+AVERAGE_LENGTHS = [
+    2.1, 2.66667, 4.13729, None, 1.0
+]
 
 # Data for testing get_huffman_code function
 MESSAGE_AND_SYMBOLS_WITH_CODE = {
@@ -510,4 +533,38 @@ class TestHuffmanCode(TestCase):
 
                 self.assertEqual(
                     real_symbols_with_code, expected_symbols_with_code
+                )
+
+    @patch('builtins.print')
+    def test_print_all_info_for_huffman_code(self, mocked_print):
+        """Test print_all_info_for_huffman_code function"""
+
+        for i in range(MESSAGES_AMOUNT):
+            if i == 3:
+                continue
+
+            with self.subTest('a'):
+                letter_calls = [
+                    call('Symbol\tFrequency\tProbability\n')
+                ]
+
+                for letter, letter_frequency in SORTED_FREQUENCIES[i].items():
+                    letter_probability = EXPECTED_PROBABILITIES[i][letter]
+
+                    letter_calls.append(
+                        call(f'{letter}\t{letter_frequency}\t\t{letter_probability}')
+                    )
+                mocked_print.mock_calls = []
+
+                print_all_info_for_huffman_code(MESSAGES[i])
+
+                self.assertEqual(
+                    mocked_print.mock_calls,
+                    [
+                        call(f'Initial message: {MESSAGES[i]}\n'),
+                        *letter_calls,
+                        call('\nEntropy:', EXPECTED_ENTROPIES[i]),
+                        call('\nAverage length of code message:', AVERAGE_LENGTHS[i]),
+                        call('\nHuffman code:', EXPECTED_HUFFMAN_CODE[i]),
+                    ]
                 )

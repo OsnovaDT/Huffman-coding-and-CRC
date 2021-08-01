@@ -14,6 +14,7 @@ from huffman import (
     print_frequency_and_probability_for_symbols, get_symbols_with_code,
     get_average_length_of_code_message, get_huffman_code,
     print_all_info_for_huffman_code, get_new_node_created_by_first_2_nodes,
+    insert_node, 
 )
 
 # Data for testing
@@ -375,6 +376,36 @@ EXPECTED_HUFFMAN_CODE = [
     EXPECTED_HUFFMAN_CODE_FOR_MESSAGE_5
 ]
 
+
+tree_and_tree_after_adding_node = [
+    [[
+        ['c', 'y', 'w', 'v', 'p', 'h', 'g', 'n', 'a', ' ', 's', 'e', '-', 'o', 't', 'r', 'm', 'i'],
+        [1, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5]
+    ],
+    (
+        (('C', 'u'), 2),
+        5,
+        [['c', 'y', 'w', 'v', 'p', ('C', 'u'), 'h', 'g', 'n', 'a', ' ', 's', 'e', '-', 'o', 't', 'r', 'm', 'i'],[1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5]]
+    )],
+    [
+        [
+            ['h', 'g', ('p', ('w', 'v')), 'n', 'a', ' ', 's', 'e', '-', 'o', 't', 'r', 'm', 'i'],
+            [2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5]
+        ],
+        (
+            ((('c', 'y'), ('C', 'u')), 4),
+            9,
+            [
+                [
+                    'h', 'g', ('p', ('w', 'v')), 'n', 'a', ' ', 's', 'e', '-', (('c', 'y'), ('C', 'u')), 'o', 't', 'r', 'm', 'i'
+                ], 
+                [2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5]
+            ]
+        )
+    ]
+]
+
+
 class TestHuffmanCode(TestCase):
     """Class with tests for Huffman code"""
 
@@ -593,3 +624,11 @@ class TestHuffmanCode(TestCase):
             real_new_nodes = get_new_node_created_by_first_2_nodes(tree)
 
             self.assertEqual(real_new_nodes, expected_new_nodes)
+
+    def test_insert_node(self):
+        """Test insert_node function"""
+
+        for tree, data in tree_and_tree_after_adding_node:
+            insert_node(data[0], data[1], tree)
+
+            self.assertEqual(tree, data[2])

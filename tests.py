@@ -7,7 +7,7 @@ from unittest import TestCase
 from huffman import (
     get_symbols_with_frequency, get_symbols_with_probability,
     get_probability_for_symbol, get_sorted_symbols_with_frequency,
-    is_tree
+    is_tree, get_huffman_code_tree
 )
 
 # Data for testing
@@ -83,6 +83,22 @@ EXPECTED_PROBABILITY_FOR_MESSAGE_4 = {}
 
 EXPECTED_PROBABILITY_FOR_MESSAGE_5 = {'a': 0.5, 'b': 0.5}
 
+# Code tree
+
+EXPECTED_CODE_TREE_FOR_MESSAGE_1 = [(('d', ('c', 'a')), ('b', 'e'))]
+
+EXPECTED_CODE_TREE_FOR_MESSAGE_2 = [(('e', 'b'), (('!', ('o', 'r')), ('p', ' ')))]
+
+EXPECTED_CODE_TREE_FOR_MESSAGE_3 = [
+    ((('m', 'i'), (('-', 'h'), ('s', 'e'))),
+    ((('a', ' '), ('r', 'n')), (('o', 't'),
+    ((('v', 'p'), ('y', 'w')), (('u', 'c'), ('g', 'C'))))))
+]
+
+EXPECTED_CODE_TREE_FOR_MESSAGE_4 = []
+
+EXPECTED_CODE_TREE_FOR_MESSAGE_5 = [('a', 'b')]
+
 # Data for testing get_symbols_with_frequency function
 MESSAGE_AND_FREQUENCY = {
     MESSAGE_1: EXPECTED_FREQUENCY_FOR_MESSAGE_1,
@@ -114,6 +130,15 @@ FREQUENCY_AND_SORTED_FREQUENCY = (
 OBJECTS_TREES = ((1, 2, 3), (1,), ('string1', 'string2'))
 
 OBJECTS_ARE_NOT_TREES = (1, [1, 2, 3], 'string', None, 0)
+
+# Data for testing get_huffman_code_tree function
+FREQUENCY_AND_CODE_TREE = (
+    (SORTED_FREQUENCY_FOR_MESSAGE_1, EXPECTED_CODE_TREE_FOR_MESSAGE_1),
+    (SORTED_FREQUENCY_FOR_MESSAGE_2, EXPECTED_CODE_TREE_FOR_MESSAGE_2),
+    (SORTED_FREQUENCY_FOR_MESSAGE_3, EXPECTED_CODE_TREE_FOR_MESSAGE_3),
+    (SORTED_FREQUENCY_FOR_MESSAGE_4, EXPECTED_CODE_TREE_FOR_MESSAGE_4),
+    (SORTED_FREQUENCY_FOR_MESSAGE_5, EXPECTED_CODE_TREE_FOR_MESSAGE_5),
+)
 
 
 class TestHuffmanCode(TestCase):
@@ -151,6 +176,7 @@ class TestHuffmanCode(TestCase):
                     expected_symbol_probability
                 )
 
+    # TODO:
     def test_get_sorted_symbols_with_frequency(self):
         """Test get_sorted_symbols_with_frequency function"""
 
@@ -170,3 +196,11 @@ class TestHuffmanCode(TestCase):
         for object in OBJECTS_ARE_NOT_TREES:
             with self.subTest(f'Object: {object}'):
                 self.assertFalse(is_tree(object))
+
+    def test_get_huffman_code_tree(self):
+        """Test get_huffman_code_tree function"""
+
+        for frequency, expected_code_tree in FREQUENCY_AND_CODE_TREE:
+            real_code_tree = get_huffman_code_tree(frequency)
+
+            self.assertEqual(real_code_tree, expected_code_tree)

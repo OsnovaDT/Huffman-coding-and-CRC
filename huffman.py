@@ -23,7 +23,7 @@ def get_symbols_with_frequency(message):
 def get_symbols_with_probability(symbols_with_frequency):
     """Get probability for symbols in the message"""
 
-    symbols_with_probability = dict()
+    symbols_with_probability = {}
     message_length = sum(symbols_with_frequency.values())
 
     for symbol, symbol_frequency in symbols_with_frequency.items():
@@ -45,13 +45,11 @@ def get_sorted_symbols_with_frequency(
         symbols_with_frequency, in_descending_order=True):
     """Get symbols sorted by frequency"""
 
-    sorted_symbols_with_frequency = dict(sorted(
+    return dict(sorted(
         symbols_with_frequency.items(),
         key=lambda symbol_and_frequency: symbol_and_frequency[1],
         reverse=in_descending_order
     ))
-
-    return sorted_symbols_with_frequency
 
 
 def print_frequency_and_probability_for_symbols(
@@ -74,6 +72,9 @@ def print_frequency_and_probability_for_symbols(
 
 def get_huffman_code_tree(symbols_with_frequency):
     """Get Huffman code tree by symbols frequency"""
+
+    if symbols_with_frequency == {}:
+        return []
 
     code_tree = [
         list(symbols_with_frequency.keys()),
@@ -194,12 +195,7 @@ def is_tree(object_):
 def get_huffman_code(symbols_with_code, message):
     """Get string with Huffman code"""
 
-    huffman_code = ''
-
-    for symbol in message:
-        huffman_code += symbols_with_code[symbol]
-
-    return huffman_code
+    return ''.join(symbols_with_code[symbol] for symbol in message)
 
 
 def get_symbols_with_code(code_tree, symbols_with_code, current_code=''):

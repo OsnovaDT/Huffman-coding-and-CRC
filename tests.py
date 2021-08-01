@@ -1,31 +1,48 @@
 """Module with tests"""
 
-from unittest import TestCase, main as start_unittests
+from random import randint
+
+from unittest import TestCase
 
 from huffman import (
-    get_symbols_frequency, get_symbols_probability,
-    get_probability_for_symbol, get_symbols_sorted_by_frequency
+    get_symbols_with_frequency, get_symbols_with_probability,
+    get_probability_for_symbol, get_sorted_symbols_with_frequency,
+    is_tree
 )
 
+# Data for testing
 
+# Message
 MESSAGE_1 = "aabbbbbbbbccccdeeeee"
+
 MESSAGE_2 = "beep boop beer!"
+
 MESSAGE_3 = "Communication systems with over-the-air-programming"
 
-FREQUENCY_FOR_MESSAGE_1 = {
+MESSAGE_4 = ''
+
+MESSAGE_5 = 'ab'
+
+# Frequency
+EXPECTED_FREQUENCY_FOR_MESSAGE_1 = {
     'a': 2, 'b': 8, 'c': 4, 'd': 1, 'e': 5
 }
 
-FREQUENCY_FOR_MESSAGE_2 = {
+EXPECTED_FREQUENCY_FOR_MESSAGE_2 = {
     'b': 3, 'e': 4, 'p': 2, ' ': 2, 'o': 2, 'r': 1, '!': 1
 }
 
-FREQUENCY_FOR_MESSAGE_3 = {
+EXPECTED_FREQUENCY_FOR_MESSAGE_3 = {
     'C': 1, 'o': 4, 'm': 5, 'u': 1, 'n': 3, 'i': 5, 'c': 1,
     'a': 3, 't': 4, ' ': 3, 's': 3, 'y': 1, 'e': 3, 'w': 1,
     'h': 2, 'v': 1, 'r': 4, '-': 3, 'p': 1, 'g': 2
 }
 
+EXPECTED_FREQUENCY_FOR_MESSAGE_4 = {}
+
+EXPECTED_FREQUENCY_FOR_MESSAGE_5 = {'a': 1, 'b': 1}
+
+# Sorted frequency
 SORTED_FREQUENCY_FOR_MESSAGE_1 = {
     'b': 8, 'e': 5, 'c': 4, 'a': 2, 'd': 1
 }
@@ -40,6 +57,11 @@ SORTED_FREQUENCY_FOR_MESSAGE_3 = {
     'y': 1, 'w': 1, 'v': 1, 'p': 1
 }
 
+SORTED_FREQUENCY_FOR_MESSAGE_4 = {}
+
+SORTED_FREQUENCY_FOR_MESSAGE_5 = {'a': 1, 'b': 1}
+
+# Probability
 EXPECTED_PROBABILITY_FOR_MESSAGE_1 = {
     'a': 0.1, 'b': 0.4, 'c': 0.2, 'd': 0.05, 'e': 0.25
 }
@@ -57,68 +79,83 @@ EXPECTED_PROBABILITY_FOR_MESSAGE_3 = {
     'r': 0.07843, '-': 0.05882, 'p': 0.01961, 'g': 0.03922
 }
 
+EXPECTED_PROBABILITY_FOR_MESSAGE_4 = {}
+
+EXPECTED_PROBABILITY_FOR_MESSAGE_5 = {'a': 0.5, 'b': 0.5}
+
+# Data for testing get_symbols_with_frequency function
+MESSAGE_AND_FREQUENCY = {
+    MESSAGE_1: EXPECTED_FREQUENCY_FOR_MESSAGE_1,
+    MESSAGE_2: EXPECTED_FREQUENCY_FOR_MESSAGE_2,
+    MESSAGE_3: EXPECTED_FREQUENCY_FOR_MESSAGE_3,
+    MESSAGE_4: EXPECTED_FREQUENCY_FOR_MESSAGE_4,
+    MESSAGE_5: EXPECTED_FREQUENCY_FOR_MESSAGE_5,
+}
+
+# Data for testing get_symbols_with_probability function
+FREQUENCY_AND_PROBABILITY = (
+    (EXPECTED_FREQUENCY_FOR_MESSAGE_1, EXPECTED_PROBABILITY_FOR_MESSAGE_1),
+    (EXPECTED_FREQUENCY_FOR_MESSAGE_3, EXPECTED_PROBABILITY_FOR_MESSAGE_3),
+    (EXPECTED_FREQUENCY_FOR_MESSAGE_2, EXPECTED_PROBABILITY_FOR_MESSAGE_2),
+    (EXPECTED_FREQUENCY_FOR_MESSAGE_4, EXPECTED_PROBABILITY_FOR_MESSAGE_4),
+    (EXPECTED_FREQUENCY_FOR_MESSAGE_5, EXPECTED_PROBABILITY_FOR_MESSAGE_5),
+)
+
+# Data for testing get_sorted_symbols_with_frequency function
+FREQUENCY_AND_SORTED_FREQUENCY = (
+    (EXPECTED_FREQUENCY_FOR_MESSAGE_1, SORTED_FREQUENCY_FOR_MESSAGE_1),
+    (EXPECTED_FREQUENCY_FOR_MESSAGE_2, SORTED_FREQUENCY_FOR_MESSAGE_2),
+    (EXPECTED_FREQUENCY_FOR_MESSAGE_3, SORTED_FREQUENCY_FOR_MESSAGE_3),
+    (EXPECTED_FREQUENCY_FOR_MESSAGE_4, SORTED_FREQUENCY_FOR_MESSAGE_4),
+    (EXPECTED_FREQUENCY_FOR_MESSAGE_5, SORTED_FREQUENCY_FOR_MESSAGE_5),
+)
+
+# Data for testing is_tree function
+OBJECTS_TREES = ((1, 2, 3), (1,), ('string1', 'string2'))
+
+OBJECTS_ARE_NOT_TREES = (1, [1, 2, 3], 'string', None, 0)
+
 
 class TestHuffmanCode(TestCase):
     """Class with tests for Huffman code"""
 
-    def test_get_symbols_frequency(self):
-        """Test get_symbols_frequency function"""
+    def test_get_symbols_with_frequency(self):
+        """Test get_symbols_with_frequency function"""
 
-        self.assertEqual(
-            get_symbols_frequency(MESSAGE_1), FREQUENCY_FOR_MESSAGE_1
-        )
-        self.assertEqual(
-            get_symbols_frequency(MESSAGE_2), FREQUENCY_FOR_MESSAGE_2
-        )
-        self.assertEqual(
-            get_symbols_frequency(MESSAGE_3), FREQUENCY_FOR_MESSAGE_3
-        )
+        for message, expected_frequency in MESSAGE_AND_FREQUENCY.items():
+            real_frequency = get_symbols_with_frequency(message)
 
-    def test_get_symbols_probability(self):
-        """Test get_symbols_probability function"""
+            self.assertEqual(real_frequency, expected_frequency)
 
-        self.assertEqual(
-            get_symbols_probability(FREQUENCY_FOR_MESSAGE_1),
-            EXPECTED_PROBABILITY_FOR_MESSAGE_1
-        )
-        self.assertEqual(
-            get_symbols_probability(FREQUENCY_FOR_MESSAGE_2),
-            EXPECTED_PROBABILITY_FOR_MESSAGE_2
-        )
-        self.assertEqual(
-            get_symbols_probability(FREQUENCY_FOR_MESSAGE_3),
-            EXPECTED_PROBABILITY_FOR_MESSAGE_3
-        )
+    def test_get_symbols_with_probability(self):
+        """Test get_symbols_with_probability function"""
+
+        for frequency, expected_probability in FREQUENCY_AND_PROBABILITY:
+            real_probability = get_symbols_with_probability(frequency)
+
+            self.assertEqual(real_probability, expected_probability)
 
     def test_get_probability_for_symbol(self):
         """Test get_probability_for_symbol function"""
 
-        self.assertEqual(
-            get_probability_for_symbol(5, 40), 0.125
-        )
-        self.assertEqual(
-            get_probability_for_symbol(2.5, 45), 0.05556
-        )
-        self.assertEqual(
-            get_probability_for_symbol(10, 100), 0.1
-        )
+        for frequency in range(0, 100, 2):
+            with self.subTest(f'Frequency = {frequency}'):
+                message_length = randint(frequency + 10, 200)
+                expected_symbol_probability = round(frequency / message_length, 5)
+                real_symbol_probability = get_probability_for_symbol(
+                    frequency, message_length
+                )
 
-    def test_get_symbols_sorted_by_frequency(self):
-        """Test get_symbols_sorted_by_frequency function"""
+                self.assertEqual(
+                    real_symbol_probability,
+                    expected_symbol_probability
+                )
 
-        self.assertEqual(
-            get_symbols_sorted_by_frequency(FREQUENCY_FOR_MESSAGE_1),
-            SORTED_FREQUENCY_FOR_MESSAGE_1
-        )
-        self.assertEqual(
-            get_symbols_sorted_by_frequency(FREQUENCY_FOR_MESSAGE_2),
-            SORTED_FREQUENCY_FOR_MESSAGE_2
-        )
-        self.assertEqual(
-            get_symbols_sorted_by_frequency(FREQUENCY_FOR_MESSAGE_3),
-            SORTED_FREQUENCY_FOR_MESSAGE_3
-        )
+    def test_get_sorted_symbols_with_frequency(self):
+        """Test get_sorted_symbols_with_frequency function"""
 
-
-if __name__ == '__main__':
-    start_unittests()
+        for frequency, expected_sorted_frequency in FREQUENCY_AND_SORTED_FREQUENCY:
+            real_sorted_frequency = get_sorted_symbols_with_frequency(
+                frequency, False
+            )
+            self.assertEqual(real_sorted_frequency, expected_sorted_frequency)

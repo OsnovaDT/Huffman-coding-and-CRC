@@ -406,7 +406,7 @@ tree_and_tree_after_adding_node = [
 ]
 
 
-TREE_AND_TREE_AFTER_ADDING_FIRST_2_NODES = (
+INITIAL_TREE_AND_TREE_AFTER_ADDING_NODES = (
     [
         [
             ['C', 'u', 'c', 'y', 'w', 'v', 'p', 'h', 'g', 'n', 'a', ' ', 's', 'e', '-', 'o', 't', 'r', 'm', 'i'], [1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5]
@@ -619,31 +619,30 @@ class TestHuffmanCode(TestCase):
             if i == 3:
                 continue
 
-            with self.subTest('a'):
-                letter_calls = [
-                    call('Symbol\tFrequency\tProbability\n')
-                ]
+            letter_calls = [
+                call('Symbol\tFrequency\tProbability\n')
+            ]
 
-                for letter, letter_frequency in SORTED_FREQUENCIES[i].items():
-                    letter_probability = EXPECTED_PROBABILITIES[i][letter]
+            for letter, letter_frequency in SORTED_FREQUENCIES[i].items():
+                letter_probability = EXPECTED_PROBABILITIES[i][letter]
 
-                    letter_calls.append(
-                        call(f'{letter}\t{letter_frequency}\t\t{letter_probability}')
-                    )
-                mocked_print.mock_calls = []
-
-                print_all_info_for_huffman_code(MESSAGES[i])
-
-                self.assertEqual(
-                    mocked_print.mock_calls,
-                    [
-                        call(f'Initial message: {MESSAGES[i]}\n'),
-                        *letter_calls,
-                        call('\nEntropy:', EXPECTED_ENTROPIES[i]),
-                        call('\nAverage length of code message:', AVERAGE_LENGTHS[i]),
-                        call('\nHuffman code:', EXPECTED_HUFFMAN_CODE[i]),
-                    ]
+                letter_calls.append(
+                    call(f'{letter}\t{letter_frequency}\t\t{letter_probability}')
                 )
+            mocked_print.mock_calls = []
+
+            print_all_info_for_huffman_code(MESSAGES[i])
+
+            self.assertEqual(
+                mocked_print.mock_calls,
+                [
+                    call(f'Initial message: {MESSAGES[i]}\n'),
+                    *letter_calls,
+                    call('\nEntropy:', EXPECTED_ENTROPIES[i]),
+                    call('\nAverage length of code message:', AVERAGE_LENGTHS[i]),
+                    call('\nHuffman code:', EXPECTED_HUFFMAN_CODE[i]),
+                ]
+            )
 
     def test_get_new_node_created_by_first_2_nodes(self):
         """Test get_new_node_created_by_first_2_nodes function"""
@@ -663,7 +662,9 @@ class TestHuffmanCode(TestCase):
 
     def test_add_node_created_by_first_2_nodes(self):
         """Test add_node_created_by_first_2_nodes function"""
-        for tree, tree_after in TREE_AND_TREE_AFTER_ADDING_FIRST_2_NODES:
-            add_node_created_by_first_2_nodes(tree)
 
-            self.assertEqual(tree, tree_after)
+        for tree, expected_tree_after_adding_nodes_ in INITIAL_TREE_AND_TREE_AFTER_ADDING_NODES:
+            with self.subTest(f'Expected tree {expected_tree_after_adding_nodes_}'):
+                add_node_created_by_first_2_nodes(tree)
+
+                self.assertEqual(tree, expected_tree_after_adding_nodes_)

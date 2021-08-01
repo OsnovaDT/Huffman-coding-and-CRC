@@ -6,12 +6,12 @@ from unittest import TestCase
 from unittest.mock import patch, call
 
 from huffman import (
-    get_symbols_with_frequency, get_symbols_with_probability,
+    MESSAGE, get_symbols_with_frequency, get_symbols_with_probability,
     get_probability_for_symbol, get_sorted_symbols_with_frequency,
     is_tree, get_huffman_code_tree, get_tree_nodes_and_frequency,
     is_tree_built, delete_first_2_nodes, get_entropy,
     print_frequency_and_probability_for_symbols,
-    get_average_length_of_code_message,
+    get_average_length_of_code_message, get_huffman_code,
 )
 
 # Data for testing
@@ -26,6 +26,12 @@ MESSAGE_3 = "Communication systems with over-the-air-programming"
 MESSAGE_4 = ''
 
 MESSAGE_5 = 'ab'
+
+MESSAGES = [
+    MESSAGE_1, MESSAGE_2, MESSAGE_3, MESSAGE_4, MESSAGE_5
+]
+
+MESSAGES_AMOUNT = len(MESSAGES)
 
 # Frequency
 EXPECTED_FREQUENCY_FOR_MESSAGE_1 = {
@@ -267,6 +273,7 @@ MESSAGE_AND_ENTROPY = {
     MESSAGE_5: EXPECTED_ENTROPY_FOR_MESSAGE_5,
 }
 
+# Data for testing get_average_length_of_code_message function
 AVERAGE_LENGTH_AND_SYMBOLS_WITH_CODE_WITH_FREQUENCY = {
     2.1: [
         SYMBOLS_WITH_CODE_FOR_MESSAGE_1, EXPECTED_FREQUENCY_FOR_MESSAGE_1
@@ -281,6 +288,40 @@ AVERAGE_LENGTH_AND_SYMBOLS_WITH_CODE_WITH_FREQUENCY = {
         SYMBOLS_WITH_CODE_FOR_MESSAGE_5, EXPECTED_FREQUENCY_FOR_MESSAGE_5
     ],
 }
+
+# Data for testing get_huffman_code function
+MESSAGE_AND_SYMBOLS_WITH_CODE = {
+    MESSAGE_1: SYMBOLS_WITH_CODE_FOR_MESSAGE_1,
+    MESSAGE_2: SYMBOLS_WITH_CODE_FOR_MESSAGE_2,
+    MESSAGE_3: SYMBOLS_WITH_CODE_FOR_MESSAGE_3,
+    MESSAGE_5: SYMBOLS_WITH_CODE_FOR_MESSAGE_5,
+}
+
+SYMBOLS_WITH_CODE = [
+    SYMBOLS_WITH_CODE_FOR_MESSAGE_1, SYMBOLS_WITH_CODE_FOR_MESSAGE_2,
+    SYMBOLS_WITH_CODE_FOR_MESSAGE_3, None,
+    SYMBOLS_WITH_CODE_FOR_MESSAGE_5
+]
+
+EXPECTED_HUFFMAN_CODE_FOR_MESSAGE_1 = '110111010000000011111111111111001010'\
+    + '101010'
+
+EXPECTED_HUFFMAN_CODE_FOR_MESSAGE_2 = '0011111010100001101110101000111110001001'
+
+EXPECTED_HUFFMAN_CODE_FOR_MESSAGE_3 = '11101011110000001110111001001111000011'\
+    + '0110000111111001011101001110010100110001010000100011110001000111001011'\
+    + '0011111111000110101110110101100101100101101001100011101101010000110111'\
+    + '111011111010110000000001100110111'
+
+EXPECTED_HUFFMAN_CODE_FOR_MESSAGE_4 = ''
+
+EXPECTED_HUFFMAN_CODE_FOR_MESSAGE_5 = '01'
+
+EXPECTED_HUFFMAN_CODE = [
+    EXPECTED_HUFFMAN_CODE_FOR_MESSAGE_1, EXPECTED_HUFFMAN_CODE_FOR_MESSAGE_2,
+    EXPECTED_HUFFMAN_CODE_FOR_MESSAGE_3, EXPECTED_HUFFMAN_CODE_FOR_MESSAGE_4,
+    EXPECTED_HUFFMAN_CODE_FOR_MESSAGE_5
+]
 
 class TestHuffmanCode(TestCase):
     """Class with tests for Huffman code"""
@@ -430,3 +471,16 @@ class TestHuffmanCode(TestCase):
                 )
 
                 self.assertEqual(real_average_length, expected_average_length)
+
+    def test_get_huffman_code(self):
+        """Test get_huffman_code function"""
+
+        for i in range(MESSAGES_AMOUNT):
+            expected_huffman_code = EXPECTED_HUFFMAN_CODE[i]
+
+            with self.subTest(f'Expected huffman code: {expected_huffman_code}'):
+                real_huffman_code = get_huffman_code(
+                    SYMBOLS_WITH_CODE[i], MESSAGES[i]
+                )
+
+                self.assertEqual(real_huffman_code, expected_huffman_code)

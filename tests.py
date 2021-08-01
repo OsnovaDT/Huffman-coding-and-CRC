@@ -7,7 +7,8 @@ from unittest import TestCase
 from huffman import (
     get_symbols_with_frequency, get_symbols_with_probability,
     get_probability_for_symbol, get_sorted_symbols_with_frequency,
-    is_tree, get_huffman_code_tree, get_tree_nodes_and_frequency
+    is_tree, get_huffman_code_tree, get_tree_nodes_and_frequency,
+    is_tree_built
 )
 
 # Data for testing
@@ -169,6 +170,29 @@ FREQUENCY_AND_NODES_WITH_FREQUENCY = (
     (EXPECTED_FREQUENCY_FOR_MESSAGE_5, EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_5),
 )
 
+# Data for testing test_is_tree_built function
+BUILT_TREES = (
+    [[((('c', 'd'), 'e'), ('a', 'b'))], [20]],
+    [[(('e', 'b'), (('!', ('o', 'r')), ('p', ' ')))], [15]],
+    [
+        [
+            ((('m', 'i'), (('-', 'h'),
+            ('s', 'e'))), ((('a', ' '),
+            ('r', 'n')), (('o', 't'),
+            ((('v', 'p'), ('y', 'w')),
+            (('u', 'c'), ('g', 'C'))))))
+        ],
+        [51]
+    ],
+    [[('a', 'b')], [2]],
+)
+
+UNBUILT_TREES = (
+    [[((('c', 'd'), 'e'))], [2, 3]],
+    [[('e', 'b')], [1, 1, 2]],
+    [[(('e', 'b'), ('a', 'c'))], [4, 1, 2, 5, 2]]
+)
+
 class TestHuffmanCode(TestCase):
     """Class with tests for Huffman code"""
 
@@ -234,6 +258,8 @@ class TestHuffmanCode(TestCase):
             self.assertEqual(real_code_tree, expected_code_tree)
 
     def test_get_tree_nodes_and_frequency(self):
+        """Test get_tree_nodes_and_frequency function"""
+
         for frequency, expected_node_and_frequency in FREQUENCY_AND_NODES_WITH_FREQUENCY:
             with self.subTest(f'Expected: {expected_node_and_frequency}'):
                 code_tree = [
@@ -242,3 +268,14 @@ class TestHuffmanCode(TestCase):
                 real_node_and_frequency = get_tree_nodes_and_frequency(code_tree)
 
                 self.assertEqual(real_node_and_frequency, expected_node_and_frequency)
+
+    def test_is_tree_built(self):
+        """Test is_tree_built function"""
+
+        for built_tree in BUILT_TREES:
+            with self.subTest(f'Tree: {built_tree}'):
+                self.assertTrue(is_tree_built(built_tree))
+
+        for unbuilt_tree in UNBUILT_TREES:
+            with self.subTest(f'Tree: {unbuilt_tree}'):
+                self.assertFalse(is_tree_built(unbuilt_tree))

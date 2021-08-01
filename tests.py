@@ -3,12 +3,14 @@
 from random import randint
 
 from unittest import TestCase
+from unittest.mock import patch, call
 
 from huffman import (
     get_symbols_with_frequency, get_symbols_with_probability,
     get_probability_for_symbol, get_sorted_symbols_with_frequency,
     is_tree, get_huffman_code_tree, get_tree_nodes_and_frequency,
-    is_tree_built, delete_first_2_nodes
+    is_tree_built, delete_first_2_nodes,
+    print_frequency_and_probability_for_symbols
 )
 
 # Data for testing
@@ -201,6 +203,30 @@ TREE_BEFORE_AND_AFTER_FIRST_2_NODES_DELETING = (
     ([[('d', ('c', 'a')), ('b', 'e')], [7, 13]], [[], []]),
 )
 
+# Data for testing print_frequency_and_probability_for_symbols function
+probability_and_frequency_with_sorted_frequency = (
+    (
+        EXPECTED_PROBABILITY_FOR_MESSAGE_1,
+        (EXPECTED_FREQUENCY_FOR_MESSAGE_1, SORTED_FREQUENCY_FOR_MESSAGE_1)
+    ),
+    (
+        EXPECTED_PROBABILITY_FOR_MESSAGE_2,
+        (EXPECTED_FREQUENCY_FOR_MESSAGE_2, SORTED_FREQUENCY_FOR_MESSAGE_2)
+    ),
+    (
+        EXPECTED_PROBABILITY_FOR_MESSAGE_3,
+        (EXPECTED_FREQUENCY_FOR_MESSAGE_3, SORTED_FREQUENCY_FOR_MESSAGE_3)
+    ),
+    (
+        EXPECTED_PROBABILITY_FOR_MESSAGE_4,
+        (EXPECTED_FREQUENCY_FOR_MESSAGE_4, SORTED_FREQUENCY_FOR_MESSAGE_4)
+    ),
+    (
+        EXPECTED_PROBABILITY_FOR_MESSAGE_5,
+        (EXPECTED_FREQUENCY_FOR_MESSAGE_5, SORTED_FREQUENCY_FOR_MESSAGE_5)
+    ),
+)
+
 class TestHuffmanCode(TestCase):
     """Class with tests for Huffman code"""
 
@@ -296,3 +322,33 @@ class TestHuffmanCode(TestCase):
                 delete_first_2_nodes(tree)
 
                 self.assertEqual(tree, expected_tree_after_deleting)
+
+    @patch('builtins.print')
+    def test_print_frequency_and_probability_for_symbols(self, mocked_print):
+        """Test print_frequency_and_probability_for_symbols function"""
+
+        for probability, frequencies in probability_and_frequency_with_sorted_frequency:
+            not_sorted_frequency = frequencies[0]
+            sorted_frequency = frequencies[1]
+
+            with self.subTest(frequencies):
+                mocked_print.mock_calls = []
+                letter_calls = []
+
+                print_frequency_and_probability_for_symbols(
+                    not_sorted_frequency, probability
+                )
+
+                for letter, letter_frequency in sorted_frequency.items():
+                    letter_probability = probability[letter]
+
+                    letter_calls.append(
+                        call(f'{letter}\t{letter_frequency}\t\t{letter_probability}')
+                    )
+
+                self.assertEqual(
+                    mocked_print.mock_calls,
+                    [
+                        call('Symbol\tFrequency\tProbability\n'),
+                    ] + letter_calls
+                )

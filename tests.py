@@ -14,7 +14,7 @@ from huffman import (
     print_frequency_and_probability_for_symbols, get_symbols_with_code,
     get_average_length_of_code_message, get_huffman_code,
     print_all_info_for_huffman_code, get_new_node_created_by_first_2_nodes,
-    insert_node, 
+    insert_node, add_node_created_by_first_2_nodes
 )
 
 # Data for testing
@@ -406,6 +406,34 @@ tree_and_tree_after_adding_node = [
 ]
 
 
+TREE_AND_TREE_AFTER_ADDING_FIRST_2_NODES = (
+    [
+        [
+            ['C', 'u', 'c', 'y', 'w', 'v', 'p', 'h', 'g', 'n', 'a', ' ', 's', 'e', '-', 'o', 't', 'r', 'm', 'i'], [1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5]
+        ],
+        [
+            ['c', 'y', 'w', 'v', 'p', ('C', 'u'), 'h', 'g', 'n', 'a', ' ', 's', 'e', '-', 'o', 't', 'r', 'm', 'i'],[1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5]
+        ]
+    ],
+    [
+        [
+            ['m', 'i', ('s', 'e'), ('a', ' '), (('p', ('w', 'v')), 'n'), ('-', ('h', 'g')), ('t', 'r'), ((('c', 'y'), ('C', 'u')), 'o')], [5, 5, 6, 6, 6, 7, 8, 8]
+        ],
+        [
+            [('s', 'e'), ('a', ' '), (('p', ('w', 'v')), 'n'), ('-', ('h', 'g')), ('t', 'r'), ((('c', 'y'), ('C', 'u')), 'o'), ('m', 'i')], [6, 6, 6, 7, 8, 8, 10]
+        ]
+    ],
+    [
+        [
+        [('m', 'i'), (('s', 'e'), ('a', ' ')), ((('p', ('w', 'v')), 'n'), ('-', ('h', 'g'))), (('t', 'r'), ((('c', 'y'), ('C', 'u')), 'o'))], [10, 12, 13, 16]
+        ],
+        [
+            [((('p', ('w', 'v')), 'n'), ('-', ('h', 'g'))), (('t', 'r'), ((('c', 'y'), ('C', 'u')), 'o')), (('m', 'i'), (('s', 'e'), ('a', ' ')))], [13, 16, 22]
+        ],
+    ]
+)
+
+
 class TestHuffmanCode(TestCase):
     """Class with tests for Huffman code"""
 
@@ -632,3 +660,10 @@ class TestHuffmanCode(TestCase):
             insert_node(data[0], data[1], tree)
 
             self.assertEqual(tree, data[2])
+
+    def test_add_node_created_by_first_2_nodes(self):
+        """Test add_node_created_by_first_2_nodes function"""
+        for tree, tree_after in TREE_AND_TREE_AFTER_ADDING_FIRST_2_NODES:
+            add_node_created_by_first_2_nodes(tree)
+
+            self.assertEqual(tree, tree_after)

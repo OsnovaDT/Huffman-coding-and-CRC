@@ -3,14 +3,15 @@
 from random import randint
 
 from unittest import TestCase
+import unittest
 from unittest.mock import patch, call
 
 from huffman import (
-    MESSAGE, get_symbols_with_frequency, get_symbols_with_probability,
+    get_symbols_with_frequency, get_symbols_with_probability,
     get_probability_for_symbol, get_sorted_symbols_with_frequency,
     is_tree, get_huffman_code_tree, get_tree_nodes_and_frequency,
     is_tree_built, delete_first_2_nodes, get_entropy,
-    print_frequency_and_probability_for_symbols,
+    print_frequency_and_probability_for_symbols, get_symbols_with_code,
     get_average_length_of_code_message, get_huffman_code,
 )
 
@@ -107,6 +108,17 @@ EXPECTED_CODE_TREE_FOR_MESSAGE_3 = [
 EXPECTED_CODE_TREE_FOR_MESSAGE_4 = []
 
 EXPECTED_CODE_TREE_FOR_MESSAGE_5 = [('a', 'b')]
+
+CODE_TREES = [
+    [('b', ('e', (('d', 'a'), 'c')))],
+    [(('b', (' ', 'o')), ((('r', '!'), 'p'), 'e'))],
+    [
+        ((('m', 'i'), (('s', 'e'), ('a', ' '))),
+        (((('p', ('w', 'v')), 'n'), ('-', ('h', 'g'))), (('t', 'r'), ((('c', 'y'), ('C', 'u')), 'o'))))
+    ],
+    None,
+    [('a', 'b')],
+]
 
 # Nodes and frequency
 EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_1 = (
@@ -484,3 +496,18 @@ class TestHuffmanCode(TestCase):
                 )
 
                 self.assertEqual(real_huffman_code, expected_huffman_code)
+
+    def test_get_symbols_with_code(self):
+        """Test get_symbols_with_code function"""
+
+        for i in range(1):
+            expected_symbols_with_code = SYMBOLS_WITH_CODE[i]
+
+            with self.subTest(f'Expected symbols with code: {expected_symbols_with_code}'):
+                real_symbols_with_code = get_symbols_with_code(
+                    *CODE_TREES[i], {}
+                )
+
+                self.assertEqual(
+                    real_symbols_with_code, expected_symbols_with_code
+                )

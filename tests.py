@@ -159,3 +159,14 @@ class TestHuffmanCode(TestCase):
                 frequency, False
             )
             self.assertEqual(real_sorted_frequency, expected_sorted_frequency)
+
+    def test_is_tree(self):
+        """Test is_tree function"""
+
+        for tree in OBJECTS_TREES:
+            with self.subTest(f'Tree: {tree}'):
+                self.assertTrue(is_tree(tree))
+
+        for object in OBJECTS_ARE_NOT_TREES:
+            with self.subTest(f'Object: {object}'):
+                self.assertFalse(is_tree(object))

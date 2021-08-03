@@ -86,22 +86,6 @@ EXPECTED_HUFFMAN_CODE_TREES = (
     [('a', 'b')],
 )
 
-CODE_TREES_FOR_GETTING_SYMBOLS_WITH_CODE = (
-    [('b', ('e', (('d', 'a'), 'c')))],
-    [(('b', (' ', 'o')), ((('r', '!'), 'p'), 'e'))],
-    [
-        (
-            (('m', 'i'), (('s', 'e'), ('a', ' '))),
-            (
-                ((('p', ('w', 'v')), 'n'), ('-', ('h', 'g'))),
-                (('t', 'r'), ((('c', 'y'), ('C', 'u')), 'o'))
-            )
-        )
-    ],
-    None,
-    [('a', 'b')],
-)
-
 # Test nodes and frequency
 EXPECTED_NODES_WITH_FREQUENCY = (
     (['a', 'b', 'c', 'd', 'e'], [2, 8, 4, 1, 5]),
@@ -119,6 +103,34 @@ EXPECTED_NODES_WITH_FREQUENCY = (
 
 # Test entropies
 EXPECTED_ENTROPIES = (2.04145, 2.65657, 4.10876, 0, 1)
+
+# Test Huffman code
+EXPECTED_HUFFMAN_CODE = [
+    '110111010000000011111111111111001010101010',
+    '0011111010100001101110101000111110001001',
+    '1110101111000000111011100100111100001101100001111110010111010011100101'\
+        + '0011000101000010001111000100011100101100111111110001101011101101'\
+        + '0110010110010110100110001110110101000011011111101111101011000000'\
+        + '0001100110111',
+    '',
+    '01',
+]
+
+CODE_TREES_FOR_GETTING_SYMBOLS_WITH_CODE = (
+    [('b', ('e', (('d', 'a'), 'c')))],
+    [(('b', (' ', 'o')), ((('r', '!'), 'p'), 'e'))],
+    [
+        (
+            (('m', 'i'), (('s', 'e'), ('a', ' '))),
+            (
+                ((('p', ('w', 'v')), 'n'), ('-', ('h', 'g'))),
+                (('t', 'r'), ((('c', 'y'), ('C', 'u')), 'o'))
+            )
+        )
+    ],
+    None,
+    [('a', 'b')],
+)
 
 SYMBOLS_WITH_CODE = (
     {'b': '0', 'e': '10', 'c': '111', 'd': '1100', 'a': '1101'},
@@ -210,38 +222,27 @@ TEST_TREES_AND_EXPECTED_NEW_NODES = (
 
 # Data for testing delete_first_2_nodes function
 TREE_BEFORE_AND_AFTER_FIRST_2_NODES_DELETING = (
-    ([['b', 'e', 'c', 'a', 'd'], [8, 5, 4, 2, 1]], [['c', 'a', 'd'], [4, 2, 1]]),
-    ([['c', 'a', 'd', ('b', 'e')], [4, 2, 1, 13]], [['d', ('b', 'e')], [1, 13]]),
-    ([['d', ('c', 'a'), ('b', 'e')], [1, 6, 13]], [[('b', 'e')], [13]]),
-    ([[('d', ('c', 'a')), ('b', 'e')], [7, 13]], [[], []]),
+    (
+        [['b', 'e', 'c', 'a', 'd'], [8, 5, 4, 2, 1]],
+        [['c', 'a', 'd'], [4, 2, 1]]
+    ),
+    (
+        [['c', 'a', 'd', ('b', 'e')], [4, 2, 1, 13]],
+        [['d', ('b', 'e')], [1, 13]]
+    ),
+    (
+        [['d', ('c', 'a'), ('b', 'e')], [1, 6, 13]],
+        [[('b', 'e')], [13]]
+    ),
+    (
+        [[('d', ('c', 'a')), ('b', 'e')], [7, 13]],
+        [[], []]
+    ),
 )
 
-# Data for testing get_average_length_of_code_message function
 AVERAGE_LENGTHS = [
     2.1, 2.66667, 4.13729, None, 1.0
 ]
-
-
-EXPECTED_HUFFMAN_CODE_FOR_MESSAGE_1 = '110111010000000011111111111111001010'\
-    + '101010'
-
-EXPECTED_HUFFMAN_CODE_FOR_MESSAGE_2 = '0011111010100001101110101000111110001001'
-
-EXPECTED_HUFFMAN_CODE_FOR_MESSAGE_3 = '11101011110000001110111001001111000011'\
-    + '0110000111111001011101001110010100110001010000100011110001000111001011'\
-    + '0011111111000110101110110101100101100101101001100011101101010000110111'\
-    + '111011111010110000000001100110111'
-
-EXPECTED_HUFFMAN_CODE_FOR_MESSAGE_4 = ''
-
-EXPECTED_HUFFMAN_CODE_FOR_MESSAGE_5 = '01'
-
-EXPECTED_HUFFMAN_CODE = [
-    EXPECTED_HUFFMAN_CODE_FOR_MESSAGE_1, EXPECTED_HUFFMAN_CODE_FOR_MESSAGE_2,
-    EXPECTED_HUFFMAN_CODE_FOR_MESSAGE_3, EXPECTED_HUFFMAN_CODE_FOR_MESSAGE_4,
-    EXPECTED_HUFFMAN_CODE_FOR_MESSAGE_5
-]
-
 
 tree_and_tree_after_adding_node = [
     [[

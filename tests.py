@@ -1,4 +1,4 @@
-"""Module with tests"""
+"""Module with unit tests"""
 
 from random import randint
 
@@ -16,10 +16,9 @@ from huffman import (
     insert_node, add_node_created_by_first_2_nodes
 )
 
-# Data for testing
+# DATA FOR TESTING
 
-# Test messages
-MESSAGES = (
+TEST_MESSAGES = (
     "aabbbbbbbbccccdeeeee",
     "beep boop beer!",
     "Communication systems with over-the-air-programming",
@@ -27,9 +26,8 @@ MESSAGES = (
     'ab'
 )
 
-MESSAGES_AMOUNT = len(MESSAGES)
+TEST_MESSAGES_AMOUNT = len(TEST_MESSAGES)
 
-# Test frequencies
 EXPECTED_FREQUENCIES = (
     {'a': 2, 'b': 8, 'c': 4, 'd': 1, 'e': 5},
     {'b': 3, 'e': 4, 'p': 2, ' ': 2, 'o': 2, 'r': 1, '!': 1},
@@ -42,7 +40,6 @@ EXPECTED_FREQUENCIES = (
     {'a': 1, 'b': 1},
 )
 
-# Test sorted frequencies
 EXPECTED_SORTED_FREQUENCIES = (
     {'b': 8, 'e': 5, 'c': 4, 'a': 2, 'd': 1},
     {'e': 4, 'b': 3, 'p': 2, ' ': 2, 'o': 2, 'r': 1, '!': 1},
@@ -55,7 +52,6 @@ EXPECTED_SORTED_FREQUENCIES = (
     {'a': 1, 'b': 1},
 )
 
-# Test probabilities
 EXPECTED_PROBABILITIES = (
     {'a': 0.1, 'b': 0.4, 'c': 0.2, 'd': 0.05, 'e': 0.25},
     {
@@ -73,7 +69,6 @@ EXPECTED_PROBABILITIES = (
     {'a': 0.5, 'b': 0.5},
 )
 
-# Test Huffman code trees
 EXPECTED_HUFFMAN_CODE_TREES = (
     [(('d', ('c', 'a')), ('b', 'e'))],
     [(('e', 'b'), (('!', ('o', 'r')), ('p', ' ')))],
@@ -86,7 +81,6 @@ EXPECTED_HUFFMAN_CODE_TREES = (
     [('a', 'b')],
 )
 
-# Test nodes and frequency
 EXPECTED_NODES_WITH_FREQUENCY = (
     (['a', 'b', 'c', 'd', 'e'], [2, 8, 4, 1, 5]),
     (['b', 'e', 'p', ' ', 'o', 'r', '!'], [3, 4, 2, 2, 2, 1, 1]),
@@ -101,11 +95,13 @@ EXPECTED_NODES_WITH_FREQUENCY = (
     (['a', 'b'], [1, 1])
 )
 
-# Test entropies
 EXPECTED_ENTROPIES = (2.04145, 2.65657, 4.10876, 0, 1)
 
-# Test Huffman code
-EXPECTED_HUFFMAN_CODE = [
+EXPECTED_AVERAGE_LENGTHS = (
+    2.1, 2.66667, 4.13729, None, 1.0
+)
+
+EXPECTED_HUFFMAN_CODES = [
     '110111010000000011111111111111001010101010',
     '0011111010100001101110101000111110001001',
     '1110101111000000111011100100111100001101100001111110010111010011100101'\
@@ -116,7 +112,7 @@ EXPECTED_HUFFMAN_CODE = [
     '01',
 ]
 
-CODE_TREES_FOR_GETTING_SYMBOLS_WITH_CODE = (
+TEST_CODE_TREES = (
     [('b', ('e', (('d', 'a'), 'c')))],
     [(('b', (' ', 'o')), ((('r', '!'), 'p'), 'e'))],
     [
@@ -132,7 +128,7 @@ CODE_TREES_FOR_GETTING_SYMBOLS_WITH_CODE = (
     [('a', 'b')],
 )
 
-SYMBOLS_WITH_CODE = (
+TEST_SYMBOLS_WITH_CODE = (
     {'b': '0', 'e': '10', 'c': '111', 'd': '1100', 'a': '1101'},
     {
         'b': '00', ' ': '010', 'o': '011', 'e': '11',
@@ -149,12 +145,12 @@ SYMBOLS_WITH_CODE = (
 )
 
 # Data for testing is_tree function
-OBJECTS_TREES = ((1, 2, 3), (1,), ('string1', 'string2'))
+TEST_OBJECTS_TREES = ((1, 2, 3), (1,), ('string1', 'string2'))
 
-OBJECTS_ARE_NOT_TREES = (1, [1, 2, 3], 'string', None, 0)
+TEST_OBJECTS_ARE_NOT_TREES = (1, [1, 2, 3], 'string', None, 0)
 
 # Data for testing is_tree_built function
-BUILT_TREES = (
+TEST_BUILT_TREES = (
     [[((('c', 'd'), 'e'), ('a', 'b'))], [20]],
     [[(('e', 'b'), (('!', ('o', 'r')), ('p', ' ')))], [15]],
     [
@@ -178,7 +174,7 @@ BUILT_TREES = (
     [[('a', 'b')], [2]],
 )
 
-UNBUILT_TREES = (
+TEST_UNBUILT_TREES = (
     [[((('c', 'd'), 'e'))], [2, 3]],
     [[('e', 'b')], [1, 1, 2]],
     [[(('e', 'b'), ('a', 'c'))], [4, 1, 2, 5, 2]]
@@ -221,7 +217,7 @@ TEST_TREES_AND_EXPECTED_NEW_NODES = (
 )
 
 # Data for testing delete_first_2_nodes function
-TREE_BEFORE_AND_AFTER_FIRST_2_NODES_DELETING = (
+TEST_TREE_AND_TREE_AFTER_DELETING_FIRST_2_NODES = (
     (
         [['b', 'e', 'c', 'a', 'd'], [8, 5, 4, 2, 1]],
         [['c', 'a', 'd'], [4, 2, 1]]
@@ -240,59 +236,61 @@ TREE_BEFORE_AND_AFTER_FIRST_2_NODES_DELETING = (
     ),
 )
 
-AVERAGE_LENGTHS = (
-    2.1, 2.66667, 4.13729, None, 1.0
-)
-
-TREE_AND_TREE_AFTER_ADDING_NODE = (
+# Data for testing test_insert_node function
+TEST_TREES_BEFORE_ADDING_NODE = (
     # Tree 1
     [
         [
-            [
-                'c', 'y', 'w', 'v', 'p', 'h', 'g', 'n', 'a', ' ',
-                's', 'e', '-', 'o', 't', 'r', 'm', 'i'
-            ],
-            [1, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5]
+            'c', 'y', 'w', 'v', 'p', 'h', 'g', 'n', 'a', ' ',
+            's', 'e', '-', 'o', 't', 'r', 'm', 'i'
         ],
-        (
-            (('C', 'u'), 2),
-            5,
-            [
-                [
-                    'c', 'y', 'w', 'v', 'p', ('C', 'u'), 'h', 'g', 'n', 'a',
-                    ' ', 's', 'e', '-', 'o', 't', 'r', 'm', 'i'
-                ],
-                [1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5]
-            ]
-        )
+        [1, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5]
     ],
 
     # Tree 2
     [
         [
-            [
-                'h', 'g', ('p', ('w', 'v')), 'n', 'a', ' ', 's', 'e',
-                '-', 'o', 't', 'r', 'm', 'i'
-            ],
-            [2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5]
+            'h', 'g', ('p', ('w', 'v')), 'n', 'a', ' ', 's', 'e',
+            '-', 'o', 't', 'r', 'm', 'i'
         ],
-        (
-            ((('c', 'y'), ('C', 'u')), 4),
-            9,
-            [
-                [
-                    'h', 'g', ('p', ('w', 'v')), 'n', 'a', ' ', 's', 'e', '-',
-                    (('c', 'y'), ('C', 'u')), 'o', 't', 'r', 'm', 'i'
-                ], 
-                [2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5]
-            ]
-        )
-    ]
+        [2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5]
+    ],
 )
 
-INITIAL_TREE_AND_TREE_AFTER_ADDING_NODES = (
+TEST_TREES_AFTER_ADDING_NODE = [
+    # Tree 1
+    (
+        [
+            [
+                'c', 'y', 'w', 'v', 'p', ('C', 'u'), 'h', 'g', 'n', 'a',
+                ' ', 's', 'e', '-', 'o', 't', 'r', 'm', 'i'
+            ],
+            [1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5]
+        ]
+    ),
+
+    # Tree 2
+    (
+        [
+            [
+                'h', 'g', ('p', ('w', 'v')), 'n', 'a', ' ', 's', 'e', '-',
+                (('c', 'y'), ('C', 'u')), 'o', 't', 'r', 'm', 'i'
+            ], 
+            [2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5]
+        ]
+    )
+]
+
+TEST_NODES_AND_INDEXES_FOR_ADDING_NODE = (
+    ((('C', 'u'), 2), 5),
+    (((('c', 'y'), ('C', 'u')), 4), 9),
+)
+
+# Data for testing add_node_created_by_first_2_nodes function
+TEST_TREE_AND_TREE_AFTER_ADDING_NODES = (
     # Tree 1
     [
+        # Tree before adding nodes
         [
             [
                 'C', 'u', 'c', 'y', 'w', 'v', 'p', 'h', 'g', 'n', 'a', ' ',
@@ -300,6 +298,8 @@ INITIAL_TREE_AND_TREE_AFTER_ADDING_NODES = (
             ],
             [1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5]
         ],
+
+        # Tree after adding nodes
         [
             [
                 'c', 'y', 'w', 'v', 'p', ('C', 'u'), 'h', 'g', 'n', 'a', ' ',
@@ -311,6 +311,7 @@ INITIAL_TREE_AND_TREE_AFTER_ADDING_NODES = (
 
     # Tree 2
     [
+        # Tree before adding nodes
         [
             [
                 'm', 'i', ('s', 'e'), ('a', ' '), (('p', ('w', 'v')), 'n'),
@@ -318,6 +319,8 @@ INITIAL_TREE_AND_TREE_AFTER_ADDING_NODES = (
             ],
             [5, 5, 6, 6, 6, 7, 8, 8]
         ],
+
+        # Tree after adding nodes
         [
             [
                 ('s', 'e'), ('a', ' '), (('p', ('w', 'v')), 'n'),
@@ -330,6 +333,7 @@ INITIAL_TREE_AND_TREE_AFTER_ADDING_NODES = (
 
     # Tree 3
     [
+        # Tree before adding nodes
         [
             [
                 ('m', 'i'), (('s', 'e'), ('a', ' ')),
@@ -338,6 +342,8 @@ INITIAL_TREE_AND_TREE_AFTER_ADDING_NODES = (
             ],
             [10, 12, 13, 16]
         ],
+
+        # Tree after adding nodes
         [
             [
                 ((('p', ('w', 'v')), 'n'), ('-', ('h', 'g'))),
@@ -356,15 +362,15 @@ class TestHuffmanCode(TestCase):
     def test_get_symbols_with_frequency(self):
         """Test get_symbols_with_frequency function"""
 
-        for i in range(MESSAGES_AMOUNT):
-            real_frequency = get_symbols_with_frequency(MESSAGES[i])
+        for i in range(TEST_MESSAGES_AMOUNT):
+            real_frequency = get_symbols_with_frequency(TEST_MESSAGES[i])
 
             self.assertEqual(real_frequency, EXPECTED_FREQUENCIES[i])
 
     def test_get_symbols_with_probability(self):
         """Test get_symbols_with_probability function"""
 
-        for i in range(MESSAGES_AMOUNT):
+        for i in range(TEST_MESSAGES_AMOUNT):
             real_probability = get_symbols_with_probability(EXPECTED_FREQUENCIES[i])
 
             self.assertEqual(real_probability, EXPECTED_PROBABILITIES[i])
@@ -388,7 +394,7 @@ class TestHuffmanCode(TestCase):
     def test_get_sorted_symbols_with_frequency(self):
         """Test get_sorted_symbols_with_frequency function"""
 
-        for i in range(MESSAGES_AMOUNT):
+        for i in range(TEST_MESSAGES_AMOUNT):
             real_sorted_frequency = get_sorted_symbols_with_frequency(
                 EXPECTED_FREQUENCIES[i], False
             )
@@ -397,18 +403,18 @@ class TestHuffmanCode(TestCase):
     def test_is_tree(self):
         """Test is_tree function"""
 
-        for tree in OBJECTS_TREES:
+        for tree in TEST_OBJECTS_TREES:
             with self.subTest(f'Tree: {tree}'):
                 self.assertTrue(is_tree(tree))
 
-        for object in OBJECTS_ARE_NOT_TREES:
+        for object in TEST_OBJECTS_ARE_NOT_TREES:
             with self.subTest(f'Object: {object}'):
                 self.assertFalse(is_tree(object))
 
     def test_get_huffman_code_tree(self):
         """Test get_huffman_code_tree function"""
 
-        for i in range(MESSAGES_AMOUNT):
+        for i in range(TEST_MESSAGES_AMOUNT):
             real_code_tree = get_huffman_code_tree(EXPECTED_SORTED_FREQUENCIES[i])
 
             self.assertEqual(real_code_tree, EXPECTED_HUFFMAN_CODE_TREES[i])
@@ -416,7 +422,7 @@ class TestHuffmanCode(TestCase):
     def test_get_tree_nodes_and_frequency(self):
         """Test get_tree_nodes_and_frequency function"""
 
-        for i in range(MESSAGES_AMOUNT):
+        for i in range(TEST_MESSAGES_AMOUNT):
             expected_node_and_frequency = EXPECTED_NODES_WITH_FREQUENCY[i]
             frequency = EXPECTED_FREQUENCIES[i]
 
@@ -431,18 +437,18 @@ class TestHuffmanCode(TestCase):
     def test_is_tree_built(self):
         """Test is_tree_built function"""
 
-        for built_tree in BUILT_TREES:
+        for built_tree in TEST_BUILT_TREES:
             with self.subTest(f'Tree: {built_tree}'):
                 self.assertTrue(is_tree_built(built_tree))
 
-        for unbuilt_tree in UNBUILT_TREES:
+        for unbuilt_tree in TEST_UNBUILT_TREES:
             with self.subTest(f'Tree: {unbuilt_tree}'):
                 self.assertFalse(is_tree_built(unbuilt_tree))
 
     def test_delete_first_2_nodes(self):
         """Test delete_first_2_nodes function"""
 
-        for tree, expected_tree_after_deleting in TREE_BEFORE_AND_AFTER_FIRST_2_NODES_DELETING:
+        for tree, expected_tree_after_deleting in TEST_TREE_AND_TREE_AFTER_DELETING_FIRST_2_NODES:
             with self.subTest(f'Expected tree: {expected_tree_after_deleting}'):
                 delete_first_2_nodes(tree)
 
@@ -452,7 +458,7 @@ class TestHuffmanCode(TestCase):
     def test_print_frequency_and_probability_for_symbols(self, mocked_print):
         """Test print_frequency_and_probability_for_symbols function"""
 
-        for i in range(MESSAGES_AMOUNT):
+        for i in range(TEST_MESSAGES_AMOUNT):
             not_sorted_frequency = EXPECTED_FREQUENCIES[i]
             sorted_frequency = EXPECTED_SORTED_FREQUENCIES[i]
             probability = EXPECTED_PROBABILITIES[i]
@@ -482,11 +488,11 @@ class TestHuffmanCode(TestCase):
     def test_get_entropy(self):
         """Test get_entropy function"""
 
-        for i in range(MESSAGES_AMOUNT):
+        for i in range(TEST_MESSAGES_AMOUNT):
             expected_entropy = EXPECTED_ENTROPIES[i]
 
             with self.subTest(f'Expected entropy: {expected_entropy}'):
-                real_entropy = get_entropy(MESSAGES[i])
+                real_entropy = get_entropy(TEST_MESSAGES[i])
 
                 self.assertEqual(real_entropy, expected_entropy)
 
@@ -499,13 +505,13 @@ class TestHuffmanCode(TestCase):
     def test_get_average_length_of_code_message(self):
         """Test get_average_length_of_code_message function"""
 
-        for i in range(MESSAGES_AMOUNT):
+        for i in range(TEST_MESSAGES_AMOUNT):
             if i == 3:
                 continue
 
-            symbols_with_code = SYMBOLS_WITH_CODE[i]
+            symbols_with_code = TEST_SYMBOLS_WITH_CODE[i]
             frequency = EXPECTED_FREQUENCIES[i]
-            expected_average_length = AVERAGE_LENGTHS[i]
+            expected_average_length = EXPECTED_AVERAGE_LENGTHS[i]
 
             with self.subTest(f'Expected average length: {expected_average_length}'):
                 real_average_length = get_average_length_of_code_message(
@@ -517,12 +523,12 @@ class TestHuffmanCode(TestCase):
     def test_get_huffman_code(self):
         """Test get_huffman_code function"""
 
-        for i in range(MESSAGES_AMOUNT):
-            expected_huffman_code = EXPECTED_HUFFMAN_CODE[i]
+        for i in range(TEST_MESSAGES_AMOUNT):
+            expected_huffman_code = EXPECTED_HUFFMAN_CODES[i]
 
             with self.subTest(f'Expected huffman code: {expected_huffman_code}'):
                 real_huffman_code = get_huffman_code(
-                    SYMBOLS_WITH_CODE[i], MESSAGES[i]
+                    TEST_SYMBOLS_WITH_CODE[i], TEST_MESSAGES[i]
                 )
 
                 self.assertEqual(real_huffman_code, expected_huffman_code)
@@ -530,15 +536,15 @@ class TestHuffmanCode(TestCase):
     def test_get_symbols_with_code(self):
         """Test get_symbols_with_code function"""
 
-        for i in range(MESSAGES_AMOUNT):
+        for i in range(TEST_MESSAGES_AMOUNT):
             if i == 3:
                 continue
 
-            expected_symbols_with_code = SYMBOLS_WITH_CODE[i]
+            expected_symbols_with_code = TEST_SYMBOLS_WITH_CODE[i]
 
             with self.subTest(f'Expected symbols with code: {expected_symbols_with_code}'):
                 real_symbols_with_code = get_symbols_with_code(
-                    *CODE_TREES_FOR_GETTING_SYMBOLS_WITH_CODE[i], {}
+                    *TEST_CODE_TREES[i], {}
                 )
 
                 self.assertEqual(
@@ -549,7 +555,7 @@ class TestHuffmanCode(TestCase):
     def test_print_all_info_for_huffman_code(self, mocked_print):
         """Test print_all_info_for_huffman_code function"""
 
-        for i in range(MESSAGES_AMOUNT):
+        for i in range(TEST_MESSAGES_AMOUNT):
             if i == 3:
                 continue
 
@@ -565,16 +571,16 @@ class TestHuffmanCode(TestCase):
                 )
             mocked_print.mock_calls = []
 
-            print_all_info_for_huffman_code(MESSAGES[i])
+            print_all_info_for_huffman_code(TEST_MESSAGES[i])
 
             self.assertEqual(
                 mocked_print.mock_calls,
                 [
-                    call(f'Initial message: {MESSAGES[i]}\n'),
+                    call(f'Initial message: {TEST_MESSAGES[i]}\n'),
                     *letter_calls,
                     call('\nEntropy:', EXPECTED_ENTROPIES[i]),
-                    call('\nAverage length of code message:', AVERAGE_LENGTHS[i]),
-                    call('\nHuffman code:', EXPECTED_HUFFMAN_CODE[i]),
+                    call('\nAverage length of code message:', EXPECTED_AVERAGE_LENGTHS[i]),
+                    call('\nHuffman code:', EXPECTED_HUFFMAN_CODES[i]),
                 ]
             )
 
@@ -589,15 +595,19 @@ class TestHuffmanCode(TestCase):
     def test_insert_node(self):
         """Test insert_node function"""
 
-        for tree, data in TREE_AND_TREE_AFTER_ADDING_NODE:
-            insert_node(data[0], data[1], tree)
+        for i in range(len(TEST_TREES_BEFORE_ADDING_NODE)):
+            insert_node(
+                TEST_NODES_AND_INDEXES_FOR_ADDING_NODE[i][0],
+                TEST_NODES_AND_INDEXES_FOR_ADDING_NODE[i][1],
+                TEST_TREES_BEFORE_ADDING_NODE[i]
+            )
 
-            self.assertEqual(tree, data[2])
+            self.assertEqual(TEST_TREES_BEFORE_ADDING_NODE[i], TEST_TREES_AFTER_ADDING_NODE[i])
 
     def test_add_node_created_by_first_2_nodes(self):
         """Test add_node_created_by_first_2_nodes function"""
 
-        for tree, expected_tree_after_adding_nodes_ in INITIAL_TREE_AND_TREE_AFTER_ADDING_NODES:
+        for tree, expected_tree_after_adding_nodes_ in TEST_TREE_AND_TREE_AFTER_ADDING_NODES:
             with self.subTest(f'Expected tree {expected_tree_after_adding_nodes_}'):
                 add_node_created_by_first_2_nodes(tree)
 

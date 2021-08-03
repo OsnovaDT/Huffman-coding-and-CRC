@@ -128,6 +128,12 @@ EXPECTED_CODE_TREE_FOR_MESSAGE_4 = []
 
 EXPECTED_CODE_TREE_FOR_MESSAGE_5 = [('a', 'b')]
 
+EXPECTED_CODE_TREES = [
+    EXPECTED_CODE_TREE_FOR_MESSAGE_1, EXPECTED_CODE_TREE_FOR_MESSAGE_2,
+    EXPECTED_CODE_TREE_FOR_MESSAGE_3, EXPECTED_CODE_TREE_FOR_MESSAGE_4,
+    EXPECTED_CODE_TREE_FOR_MESSAGE_5
+]
+
 CODE_TREES = [
     [('b', ('e', (('d', 'a'), 'c')))],
     [(('b', (' ', 'o')), ((('r', '!'), 'p'), 'e'))],
@@ -159,6 +165,14 @@ EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_3 = (
 EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_4 = ([], [])
 
 EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_5 = (['a', 'b'], [1, 1])
+
+EXPECTED_NODES_WITH_FREQUENCY = [
+    EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_1,
+    EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_2,
+    EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_3,
+    EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_4,
+    EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_5
+]
 
 # Entropy
 EXPECTED_ENTROPY_FOR_MESSAGE_1 = 2.04145
@@ -210,24 +224,6 @@ OBJECTS_TREES = ((1, 2, 3), (1,), ('string1', 'string2'))
 
 OBJECTS_ARE_NOT_TREES = (1, [1, 2, 3], 'string', None, 0)
 
-# Data for testing get_huffman_code_tree function
-FREQUENCY_AND_CODE_TREE = (
-    (SORTED_FREQUENCY_FOR_MESSAGE_1, EXPECTED_CODE_TREE_FOR_MESSAGE_1),
-    (SORTED_FREQUENCY_FOR_MESSAGE_2, EXPECTED_CODE_TREE_FOR_MESSAGE_2),
-    (SORTED_FREQUENCY_FOR_MESSAGE_3, EXPECTED_CODE_TREE_FOR_MESSAGE_3),
-    (SORTED_FREQUENCY_FOR_MESSAGE_4, EXPECTED_CODE_TREE_FOR_MESSAGE_4),
-    (SORTED_FREQUENCY_FOR_MESSAGE_5, EXPECTED_CODE_TREE_FOR_MESSAGE_5),
-)
-
-# Data for testing get_tree_nodes_and_frequency function
-FREQUENCY_AND_NODES_WITH_FREQUENCY = (
-    (EXPECTED_FREQUENCY_FOR_MESSAGE_1, EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_1),
-    (EXPECTED_FREQUENCY_FOR_MESSAGE_2, EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_2),
-    (EXPECTED_FREQUENCY_FOR_MESSAGE_3, EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_3),
-    (EXPECTED_FREQUENCY_FOR_MESSAGE_4, EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_4),
-    (EXPECTED_FREQUENCY_FOR_MESSAGE_5, EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_5),
-)
-
 # Data for testing test_is_tree_built function
 BUILT_TREES = (
     [[((('c', 'd'), 'e'), ('a', 'b'))], [20]],
@@ -276,45 +272,10 @@ TREE_BEFORE_AND_AFTER_FIRST_2_NODES_DELETING = (
     ([[('d', ('c', 'a')), ('b', 'e')], [7, 13]], [[], []]),
 )
 
-# Data for testing print_frequency_and_probability_for_symbols function
-probability_and_frequency_with_sorted_frequency = (
-    (
-        EXPECTED_PROBABILITY_FOR_MESSAGE_1,
-        (EXPECTED_FREQUENCY_FOR_MESSAGE_1, SORTED_FREQUENCY_FOR_MESSAGE_1)
-    ),
-    (
-        EXPECTED_PROBABILITY_FOR_MESSAGE_2,
-        (EXPECTED_FREQUENCY_FOR_MESSAGE_2, SORTED_FREQUENCY_FOR_MESSAGE_2)
-    ),
-    (
-        EXPECTED_PROBABILITY_FOR_MESSAGE_3,
-        (EXPECTED_FREQUENCY_FOR_MESSAGE_3, SORTED_FREQUENCY_FOR_MESSAGE_3)
-    ),
-    (
-        EXPECTED_PROBABILITY_FOR_MESSAGE_4,
-        (EXPECTED_FREQUENCY_FOR_MESSAGE_4, SORTED_FREQUENCY_FOR_MESSAGE_4)
-    ),
-    (
-        EXPECTED_PROBABILITY_FOR_MESSAGE_5,
-        (EXPECTED_FREQUENCY_FOR_MESSAGE_5, SORTED_FREQUENCY_FOR_MESSAGE_5)
-    ),
-)
-
 # Data for testing get_average_length_of_code_message function
-AVERAGE_LENGTH_AND_SYMBOLS_WITH_CODE_WITH_FREQUENCY = {
-    2.1: [
-        SYMBOLS_WITH_CODE_FOR_MESSAGE_1, EXPECTED_FREQUENCY_FOR_MESSAGE_1
-    ],
-    2.66667: [
-        SYMBOLS_WITH_CODE_FOR_MESSAGE_2, EXPECTED_FREQUENCY_FOR_MESSAGE_2
-    ],
-    4.13729: [
-        SYMBOLS_WITH_CODE_FOR_MESSAGE_3, EXPECTED_FREQUENCY_FOR_MESSAGE_3
-    ],
-    1.0: [
-        SYMBOLS_WITH_CODE_FOR_MESSAGE_5, EXPECTED_FREQUENCY_FOR_MESSAGE_5
-    ],
-}
+AVERAGE_LENGTHS = (
+    2.1, 2.66667, 4.13729, 0, 1.0
+)
 
 AVERAGE_LENGTHS = [
     2.1, 2.66667, 4.13729, None, 1.0
@@ -462,15 +423,18 @@ class TestHuffmanCode(TestCase):
     def test_get_huffman_code_tree(self):
         """Test get_huffman_code_tree function"""
 
-        for frequency, expected_code_tree in FREQUENCY_AND_CODE_TREE:
-            real_code_tree = get_huffman_code_tree(frequency)
+        for i in range(MESSAGES_AMOUNT):
+            real_code_tree = get_huffman_code_tree(SORTED_FREQUENCIES[i])
 
-            self.assertEqual(real_code_tree, expected_code_tree)
+            self.assertEqual(real_code_tree, EXPECTED_CODE_TREES[i])
 
     def test_get_tree_nodes_and_frequency(self):
         """Test get_tree_nodes_and_frequency function"""
 
-        for frequency, expected_node_and_frequency in FREQUENCY_AND_NODES_WITH_FREQUENCY:
+        for i in range(MESSAGES_AMOUNT):
+            expected_node_and_frequency = EXPECTED_NODES_WITH_FREQUENCY[i]
+            frequency = EXPECTED_FREQUENCIES[i]
+
             with self.subTest(f'Expected: {expected_node_and_frequency}'):
                 code_tree = [
                     list(frequency.keys()), list(frequency.values())
@@ -503,11 +467,12 @@ class TestHuffmanCode(TestCase):
     def test_print_frequency_and_probability_for_symbols(self, mocked_print):
         """Test print_frequency_and_probability_for_symbols function"""
 
-        for probability, frequencies in probability_and_frequency_with_sorted_frequency:
-            not_sorted_frequency = frequencies[0]
-            sorted_frequency = frequencies[1]
+        for i in range(MESSAGES_AMOUNT):
+            not_sorted_frequency = EXPECTED_FREQUENCIES[i]
+            sorted_frequency = SORTED_FREQUENCIES[i]
+            probability = EXPECTED_PROBABILITIES[i]
 
-            with self.subTest(frequencies):
+            with self.subTest(sorted_frequency):
                 mocked_print.mock_calls = []
                 letter_calls = []
 
@@ -549,10 +514,13 @@ class TestHuffmanCode(TestCase):
     def test_get_average_length_of_code_message(self):
         """Test get_average_length_of_code_message function"""
 
-        for expected_average_length, data in \
-                AVERAGE_LENGTH_AND_SYMBOLS_WITH_CODE_WITH_FREQUENCY.items():
-            symbols_with_code = data[0]
-            frequency = data[1]
+        for i in range(MESSAGES_AMOUNT):
+            if i == 3:
+                continue
+
+            symbols_with_code = SYMBOLS_WITH_CODE[i]
+            frequency = EXPECTED_FREQUENCIES[i]
+            expected_average_length = AVERAGE_LENGTHS[i]
 
             with self.subTest(f'Expected average length: {expected_average_length}'):
                 real_average_length = get_average_length_of_code_message(

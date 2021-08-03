@@ -364,27 +364,33 @@ class TestHuffmanCode(TestCase):
 
         for i in range(TEST_MESSAGES_AMOUNT):
             expected_message_frequency = EXPECTED_FREQUENCIES[i]
-            real_message_frequency = get_symbols_with_frequency(
-                TEST_MESSAGES[i]
-            )
 
-            self.assertEqual(
-                real_message_frequency, expected_message_frequency
-            )
+            with self.subTest(
+                    f'Expected frequency = {expected_message_frequency}'):
+                real_message_frequency = get_symbols_with_frequency(
+                    TEST_MESSAGES[i]
+                )
+
+                self.assertEqual(
+                    real_message_frequency, expected_message_frequency
+                )
 
     def test_get_symbols_with_probability(self):
         """Test get_symbols_with_probability function"""
 
         for i in range(TEST_MESSAGES_AMOUNT):
-            message_frequency = EXPECTED_FREQUENCIES[i]
             expected_message_probability = EXPECTED_PROBABILITIES[i]
-            real_message_probability = get_symbols_with_probability(
-                message_frequency
-            )
 
-            self.assertEqual(
-                real_message_probability, expected_message_probability
-            )
+            with self.subTest(
+                    f'Expected probability = {expected_message_probability}'):
+                message_frequency = EXPECTED_FREQUENCIES[i]
+                real_message_probability = get_symbols_with_probability(
+                    message_frequency
+                )
+
+                self.assertEqual(
+                    real_message_probability, expected_message_probability
+                )
 
     def test_get_probability_for_symbol(self):
         """Test get_probability_for_symbol function"""
@@ -392,14 +398,17 @@ class TestHuffmanCode(TestCase):
         for frequency in range(0, 100, 2):
             with self.subTest(f'Frequency = {frequency}'):
                 message_length = randint(frequency + 10, 200)
-                expected_symbol_probability = round(frequency / message_length, 5)
+
+                expected_symbol_probability = round(
+                    frequency / message_length, 5
+                )
+
                 real_symbol_probability = get_probability_for_symbol(
                     frequency, message_length
                 )
 
                 self.assertEqual(
-                    real_symbol_probability,
-                    expected_symbol_probability
+                    real_symbol_probability, expected_symbol_probability
                 )
 
     def test_get_sorted_symbols_with_frequency(self):

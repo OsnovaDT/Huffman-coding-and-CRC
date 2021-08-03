@@ -497,14 +497,15 @@ class TestHuffmanCode(TestCase):
         """Test get_average_length_of_code_message function"""
 
         for i in range(TEST_MESSAGES_AMOUNT):
+            # TODO: There is a bug for index == 3
             if i == 3:
                 continue
 
             symbols_with_code = TEST_SYMBOLS_WITH_CODE[i]
             frequency = TEST_FREQUENCIES[i]
-            expected_average_length = EXPECTED_AVERAGE_LENGTHS[i]
 
-            with self.subTest(f'Expected average length: {expected_average_length}'):
+            with self.subTest(f'Symbols with code: {symbols_with_code}'):
+                expected_average_length = EXPECTED_AVERAGE_LENGTHS[i]
                 real_average_length = get_average_length_of_code_message(
                     symbols_with_code, frequency
                 )
@@ -515,11 +516,12 @@ class TestHuffmanCode(TestCase):
         """Test get_huffman_code function"""
 
         for i in range(TEST_MESSAGES_AMOUNT):
-            expected_huffman_code = EXPECTED_HUFFMAN_CODES[i]
+            message = TEST_MESSAGES[i]
 
-            with self.subTest(f'Expected huffman code: {expected_huffman_code}'):
+            with self.subTest(f'Message: {message}'):
+                expected_huffman_code = EXPECTED_HUFFMAN_CODES[i]
                 real_huffman_code = get_huffman_code(
-                    TEST_SYMBOLS_WITH_CODE[i], TEST_MESSAGES[i]
+                    TEST_SYMBOLS_WITH_CODE[i], message
                 )
 
                 self.assertEqual(real_huffman_code, expected_huffman_code)
@@ -528,14 +530,16 @@ class TestHuffmanCode(TestCase):
         """Test get_symbols_with_code function"""
 
         for i in range(TEST_MESSAGES_AMOUNT):
+            # TODO: There is a bug for index == 3
             if i == 3:
                 continue
 
-            expected_symbols_with_code = TEST_SYMBOLS_WITH_CODE[i]
+            message_code_tree = TEST_CODE_TREES[i]
 
-            with self.subTest(f'Expected symbols with code: {expected_symbols_with_code}'):
+            with self.subTest(f'Message code tree: {message_code_tree}'):
+                expected_symbols_with_code = TEST_SYMBOLS_WITH_CODE[i]
                 real_symbols_with_code = get_symbols_with_code(
-                    *TEST_CODE_TREES[i], {}
+                    *message_code_tree, {}
                 )
 
                 self.assertEqual(

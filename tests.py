@@ -550,36 +550,41 @@ class TestHuffmanCode(TestCase):
         """Test get_new_node_created_by_first_2_nodes function"""
 
         for tree, expected_new_nodes in TEST_TREES_AND_EXPECTED_NEW_NODES:
-            real_new_nodes = get_new_node_created_by_first_2_nodes(tree)
+            with self.subTest(f'Tree: {tree}'):
+                real_new_nodes = get_new_node_created_by_first_2_nodes(tree)
 
-            self.assertEqual(real_new_nodes, expected_new_nodes)
+                self.assertEqual(real_new_nodes, expected_new_nodes)
 
     def test_insert_node(self):
         """Test insert_node function"""
 
         for i in range(len(TEST_TREES_BEFORE_ADDING_NODE)):
-            insert_node(
-                TEST_NODES_AND_INDEXES_FOR_ADDING_NODE[i][0],
-                TEST_NODES_AND_INDEXES_FOR_ADDING_NODE[i][1],
-                TEST_TREES_BEFORE_ADDING_NODE[i]
-            )
+            tree = TEST_TREES_BEFORE_ADDING_NODE[i]
+            node = TEST_NODES_AND_INDEXES_FOR_ADDING_NODE[i][0]
+            node_index = TEST_NODES_AND_INDEXES_FOR_ADDING_NODE[i][1]
 
-            self.assertEqual(TEST_TREES_BEFORE_ADDING_NODE[i], TEST_TREES_AFTER_ADDING_NODE[i])
+            expected_tree_after_adding_node = TEST_TREES_AFTER_ADDING_NODE[i]
+
+            with self.subTest(f'Node: {node} *** Index: {node_index}'):
+                insert_node(node, node_index, tree)
+
+                self.assertEqual(tree, expected_tree_after_adding_node)
 
     def test_add_node_created_by_first_2_nodes(self):
         """Test add_node_created_by_first_2_nodes function"""
 
-        for tree, expected_tree_after_adding_nodes_ in TEST_TREE_AND_TREE_AFTER_ADDING_NODES:
-            with self.subTest(f'Expected tree {expected_tree_after_adding_nodes_}'):
-                add_node_created_by_first_2_nodes(tree)
+        for tree, expected_tree_after_adding_nodes in \
+                TEST_TREE_AND_TREE_AFTER_ADDING_NODES:
+            add_node_created_by_first_2_nodes(tree)
 
-                self.assertEqual(tree, expected_tree_after_adding_nodes_)
+            self.assertEqual(tree, expected_tree_after_adding_nodes)
 
     @patch('builtins.print')
     def test_print_all_info_for_huffman_code(self, mocked_print):
         """Test print_all_info_for_huffman_code function"""
 
         for i in range(TEST_MESSAGES_AMOUNT):
+            # TODO: There is a bug for index == 3
             if i == 3:
                 continue
 
@@ -591,22 +596,24 @@ class TestHuffmanCode(TestCase):
                 letter_probability = EXPECTED_PROBABILITIES[i][letter]
 
                 letter_calls.append(
-                    call(f'{letter}\t{letter_frequency}\t\t{letter_probability}')
+                    call(
+                        f'{letter}\t{letter_frequency}\t\t{letter_probability}'
+                    )
                 )
+
+            expected_calls = [
+                call(f'Initial message: {TEST_MESSAGES[i]}\n'),
+                *letter_calls,
+                call('\nEntropy:', EXPECTED_ENTROPIES[i]),
+                call('\nAverage length of code message:', EXPECTED_AVERAGE_LENGTHS[i]),
+                call('\nHuffman code:', EXPECTED_HUFFMAN_CODES[i]),
+            ]
+
             mocked_print.mock_calls = []
 
             print_all_info_for_huffman_code(TEST_MESSAGES[i])
 
-            self.assertEqual(
-                mocked_print.mock_calls,
-                [
-                    call(f'Initial message: {TEST_MESSAGES[i]}\n'),
-                    *letter_calls,
-                    call('\nEntropy:', EXPECTED_ENTROPIES[i]),
-                    call('\nAverage length of code message:', EXPECTED_AVERAGE_LENGTHS[i]),
-                    call('\nHuffman code:', EXPECTED_HUFFMAN_CODES[i]),
-                ]
-            )
+            self.assertEqual(mocked_print.mock_calls, expected_calls)
 
     @patch('builtins.print')
     def test_print_frequency_and_probability_for_symbols(self, mocked_print):
@@ -617,25 +624,26 @@ class TestHuffmanCode(TestCase):
             sorted_frequency = TEST_SORTED_FREQUENCIES[i]
             probability = EXPECTED_PROBABILITIES[i]
 
-            with self.subTest(sorted_frequency):
+            with self.subTest(f'Sorted frequency: {sorted_frequency}'):
                 mocked_print.mock_calls = []
                 letter_calls = []
-
-                print_frequency_and_probability_for_symbols(
-                    not_sorted_frequency, probability
-                )
 
                 for letter, letter_frequency in sorted_frequency.items():
                     letter_probability = probability[letter]
 
                     letter_calls.append(
-                        call(f'{letter}\t{letter_frequency}\t\t{letter_probability}')
+                        call(
+                            f'{letter}\t{letter_frequency}\t\t{letter_probability}'
+                        )
                     )
 
-                self.assertEqual(
-                    mocked_print.mock_calls,
-                    [
-                        call('Symbol\tFrequency\tProbability\n'),
-                    ] + letter_calls
+                expected_calls = [
+                    call('Symbol\tFrequency\tProbability\n'),
+                    *letter_calls
+                ]
+
+                print_frequency_and_probability_for_symbols(
+                    not_sorted_frequency, probability
                 )
-# 670
+
+                self.assertEqual(mocked_print.mock_calls, expected_calls)

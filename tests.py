@@ -6,7 +6,7 @@ from unittest import TestCase
 from unittest.mock import patch, call
 
 from huffman import (
-    MESSAGE, get_symbols_with_frequency, get_symbols_with_probability,
+    get_symbols_with_frequency, get_symbols_with_probability,
     get_probability_for_symbol, get_sorted_symbols_with_frequency,
     is_tree, get_huffman_code_tree, get_tree_nodes_and_frequency,
     is_tree_built, delete_first_2_nodes, get_entropy,
@@ -18,99 +18,59 @@ from huffman import (
 
 # Data for testing
 
-# Message
-MESSAGE_1 = "aabbbbbbbbccccdeeeee"
-
-MESSAGE_2 = "beep boop beer!"
-
-MESSAGE_3 = "Communication systems with over-the-air-programming"
-
-MESSAGE_4 = ''
-
-MESSAGE_5 = 'ab'
-
+# Test messages
 MESSAGES = [
-    MESSAGE_1, MESSAGE_2, MESSAGE_3, MESSAGE_4, MESSAGE_5
+    "aabbbbbbbbccccdeeeee",
+    "beep boop beer!",
+    "Communication systems with over-the-air-programming",
+    '',
+    'ab'
 ]
 
 MESSAGES_AMOUNT = len(MESSAGES)
 
-# Frequency
-EXPECTED_FREQUENCY_FOR_MESSAGE_1 = {
-    'a': 2, 'b': 8, 'c': 4, 'd': 1, 'e': 5
-}
-
-EXPECTED_FREQUENCY_FOR_MESSAGE_2 = {
-    'b': 3, 'e': 4, 'p': 2, ' ': 2, 'o': 2, 'r': 1, '!': 1
-}
-
-EXPECTED_FREQUENCY_FOR_MESSAGE_3 = {
-    'C': 1, 'o': 4, 'm': 5, 'u': 1, 'n': 3, 'i': 5, 'c': 1,
-    'a': 3, 't': 4, ' ': 3, 's': 3, 'y': 1, 'e': 3, 'w': 1,
-    'h': 2, 'v': 1, 'r': 4, '-': 3, 'p': 1, 'g': 2
-}
-
-EXPECTED_FREQUENCY_FOR_MESSAGE_4 = {}
-
-EXPECTED_FREQUENCY_FOR_MESSAGE_5 = {'a': 1, 'b': 1}
-
+# Test frequencies
 EXPECTED_FREQUENCIES = (
-    EXPECTED_FREQUENCY_FOR_MESSAGE_1, EXPECTED_FREQUENCY_FOR_MESSAGE_2,
-    EXPECTED_FREQUENCY_FOR_MESSAGE_3, EXPECTED_FREQUENCY_FOR_MESSAGE_4,
-    EXPECTED_FREQUENCY_FOR_MESSAGE_5
+    {'a': 2, 'b': 8, 'c': 4, 'd': 1, 'e': 5},
+    {'b': 3, 'e': 4, 'p': 2, ' ': 2, 'o': 2, 'r': 1, '!': 1},
+    {
+        'C': 1, 'o': 4, 'm': 5, 'u': 1, 'n': 3, 'i': 5, 'c': 1,
+        'a': 3, 't': 4, ' ': 3, 's': 3, 'y': 1, 'e': 3, 'w': 1,
+        'h': 2, 'v': 1, 'r': 4, '-': 3, 'p': 1, 'g': 2
+    },
+    {},
+    {'a': 1, 'b': 1},
 )
 
-# Sorted frequency
-SORTED_FREQUENCY_FOR_MESSAGE_1 = {
-    'b': 8, 'e': 5, 'c': 4, 'a': 2, 'd': 1
-}
-
-SORTED_FREQUENCY_FOR_MESSAGE_2 = {
-    'e': 4, 'b': 3, 'p': 2, ' ': 2, 'o': 2, 'r': 1, '!': 1
-}
-
-SORTED_FREQUENCY_FOR_MESSAGE_3 = {
-    'm': 5, 'i': 5, 'o': 4, 't': 4, 'r': 4, 'n': 3, 'a': 3, ' ': 3,
-    's': 3, 'e': 3, '-': 3, 'h': 2, 'g': 2, 'C': 1, 'u': 1, 'c': 1,
-    'y': 1, 'w': 1, 'v': 1, 'p': 1
-}
-
-SORTED_FREQUENCY_FOR_MESSAGE_4 = {}
-
-SORTED_FREQUENCY_FOR_MESSAGE_5 = {'a': 1, 'b': 1}
-
-SORTED_FREQUENCIES = [
-    SORTED_FREQUENCY_FOR_MESSAGE_1, SORTED_FREQUENCY_FOR_MESSAGE_2,
-    SORTED_FREQUENCY_FOR_MESSAGE_3, SORTED_FREQUENCY_FOR_MESSAGE_4,
-    SORTED_FREQUENCY_FOR_MESSAGE_5
+# Test sorted frequencies
+EXPECTED_SORTED_FREQUENCIES = [
+    {'b': 8, 'e': 5, 'c': 4, 'a': 2, 'd': 1},
+    {'e': 4, 'b': 3, 'p': 2, ' ': 2, 'o': 2, 'r': 1, '!': 1},
+    {
+        'm': 5, 'i': 5, 'o': 4, 't': 4, 'r': 4, 'n': 3, 'a': 3, ' ': 3,
+        's': 3, 'e': 3, '-': 3, 'h': 2, 'g': 2, 'C': 1, 'u': 1, 'c': 1,
+        'y': 1, 'w': 1, 'v': 1, 'p': 1
+    },
+    {},
+    {'a': 1, 'b': 1},
 ]
 
 # Probability
-EXPECTED_PROBABILITY_FOR_MESSAGE_1 = {
-    'a': 0.1, 'b': 0.4, 'c': 0.2, 'd': 0.05, 'e': 0.25
-}
-
-EXPECTED_PROBABILITY_FOR_MESSAGE_2 = {
-    'b': 0.2, 'e': 0.26667, 'p': 0.13333, ' ': 0.13333,
-    'o': 0.13333, 'r': 0.06667, '!': 0.06667
-}
-
-EXPECTED_PROBABILITY_FOR_MESSAGE_3 = {
-    'C': 0.01961, 'o': 0.07843, 'm': 0.09804, 'u': 0.01961,
-    'n': 0.05882, 'i': 0.09804, 'c': 0.01961, 'a': 0.05882,
-    't': 0.07843, ' ': 0.05882, 's': 0.05882, 'y': 0.01961,
-    'e': 0.05882, 'w': 0.01961, 'h': 0.03922, 'v': 0.01961,
-    'r': 0.07843, '-': 0.05882, 'p': 0.01961, 'g': 0.03922
-}
-
-EXPECTED_PROBABILITY_FOR_MESSAGE_4 = {}
-
-EXPECTED_PROBABILITY_FOR_MESSAGE_5 = {'a': 0.5, 'b': 0.5}
-
 EXPECTED_PROBABILITIES = [
-    EXPECTED_PROBABILITY_FOR_MESSAGE_1, EXPECTED_PROBABILITY_FOR_MESSAGE_2,
-    EXPECTED_PROBABILITY_FOR_MESSAGE_3, EXPECTED_PROBABILITY_FOR_MESSAGE_4,
-    EXPECTED_PROBABILITY_FOR_MESSAGE_5
+    {'a': 0.1, 'b': 0.4, 'c': 0.2, 'd': 0.05, 'e': 0.25},
+    {
+        'b': 0.2, 'e': 0.26667, 'p': 0.13333, ' ': 0.13333,
+        'o': 0.13333, 'r': 0.06667, '!': 0.06667
+    },
+    {
+        'C': 0.01961, 'o': 0.07843, 'm': 0.09804, 'u': 0.01961,
+        'n': 0.05882, 'i': 0.09804, 'c': 0.01961, 'a': 0.05882,
+        't': 0.07843, ' ': 0.05882, 's': 0.05882, 'y': 0.01961,
+        'e': 0.05882, 'w': 0.01961, 'h': 0.03922, 'v': 0.01961,
+        'r': 0.07843, '-': 0.05882, 'p': 0.01961, 'g': 0.03922
+    },
+    {},
+    {'a': 0.5, 'b': 0.5},
 ]
 
 # Code tree
@@ -210,15 +170,6 @@ SYMBOLS_WITH_CODE_FOR_MESSAGE_3 = {
 
 SYMBOLS_WITH_CODE_FOR_MESSAGE_5 = {'a': '0', 'b': '1'}
 
-# Data for testing get_sorted_symbols_with_frequency function
-FREQUENCY_AND_SORTED_FREQUENCY = (
-    (EXPECTED_FREQUENCY_FOR_MESSAGE_1, SORTED_FREQUENCY_FOR_MESSAGE_1),
-    (EXPECTED_FREQUENCY_FOR_MESSAGE_2, SORTED_FREQUENCY_FOR_MESSAGE_2),
-    (EXPECTED_FREQUENCY_FOR_MESSAGE_3, SORTED_FREQUENCY_FOR_MESSAGE_3),
-    (EXPECTED_FREQUENCY_FOR_MESSAGE_4, SORTED_FREQUENCY_FOR_MESSAGE_4),
-    (EXPECTED_FREQUENCY_FOR_MESSAGE_5, SORTED_FREQUENCY_FOR_MESSAGE_5),
-)
-
 # Data for testing is_tree function
 OBJECTS_TREES = ((1, 2, 3), (1,), ('string1', 'string2'))
 
@@ -273,10 +224,6 @@ TREE_BEFORE_AND_AFTER_FIRST_2_NODES_DELETING = (
 )
 
 # Data for testing get_average_length_of_code_message function
-AVERAGE_LENGTHS = (
-    2.1, 2.66667, 4.13729, 0, 1.0
-)
-
 AVERAGE_LENGTHS = [
     2.1, 2.66667, 4.13729, None, 1.0
 ]
@@ -403,11 +350,11 @@ class TestHuffmanCode(TestCase):
     def test_get_sorted_symbols_with_frequency(self):
         """Test get_sorted_symbols_with_frequency function"""
 
-        for frequency, expected_sorted_frequency in FREQUENCY_AND_SORTED_FREQUENCY:
+        for i in range(MESSAGES_AMOUNT):
             real_sorted_frequency = get_sorted_symbols_with_frequency(
-                frequency, False
+                EXPECTED_FREQUENCIES[i], False
             )
-            self.assertEqual(real_sorted_frequency, expected_sorted_frequency)
+            self.assertEqual(real_sorted_frequency, EXPECTED_SORTED_FREQUENCIES[i])
 
     def test_is_tree(self):
         """Test is_tree function"""
@@ -424,7 +371,7 @@ class TestHuffmanCode(TestCase):
         """Test get_huffman_code_tree function"""
 
         for i in range(MESSAGES_AMOUNT):
-            real_code_tree = get_huffman_code_tree(SORTED_FREQUENCIES[i])
+            real_code_tree = get_huffman_code_tree(EXPECTED_SORTED_FREQUENCIES[i])
 
             self.assertEqual(real_code_tree, EXPECTED_CODE_TREES[i])
 
@@ -469,7 +416,7 @@ class TestHuffmanCode(TestCase):
 
         for i in range(MESSAGES_AMOUNT):
             not_sorted_frequency = EXPECTED_FREQUENCIES[i]
-            sorted_frequency = SORTED_FREQUENCIES[i]
+            sorted_frequency = EXPECTED_SORTED_FREQUENCIES[i]
             probability = EXPECTED_PROBABILITIES[i]
 
             with self.subTest(sorted_frequency):
@@ -545,7 +492,10 @@ class TestHuffmanCode(TestCase):
     def test_get_symbols_with_code(self):
         """Test get_symbols_with_code function"""
 
-        for i in range(1):
+        for i in range(MESSAGES_AMOUNT):
+            if i == 3:
+                continue
+
             expected_symbols_with_code = SYMBOLS_WITH_CODE[i]
 
             with self.subTest(f'Expected symbols with code: {expected_symbols_with_code}'):
@@ -569,7 +519,7 @@ class TestHuffmanCode(TestCase):
                 call('Symbol\tFrequency\tProbability\n')
             ]
 
-            for letter, letter_frequency in SORTED_FREQUENCIES[i].items():
+            for letter, letter_frequency in EXPECTED_SORTED_FREQUENCIES[i].items():
                 letter_probability = EXPECTED_PROBABILITIES[i][letter]
 
                 letter_calls.append(

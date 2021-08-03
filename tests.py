@@ -363,10 +363,8 @@ class TestHuffmanCode(TestCase):
         """Test get_symbols_with_frequency function"""
 
         for i in range(TEST_MESSAGES_AMOUNT):
-            expected_message_frequency = EXPECTED_FREQUENCIES[i]
-
-            with self.subTest(
-                    f'Expected frequency = {expected_message_frequency}'):
+            with self.subTest(f'Message = {TEST_MESSAGES[i]}'):
+                expected_message_frequency = EXPECTED_FREQUENCIES[i]
                 real_message_frequency = get_symbols_with_frequency(
                     TEST_MESSAGES[i]
                 )
@@ -379,11 +377,10 @@ class TestHuffmanCode(TestCase):
         """Test get_symbols_with_probability function"""
 
         for i in range(TEST_MESSAGES_AMOUNT):
-            expected_message_probability = EXPECTED_PROBABILITIES[i]
+            message_frequency = EXPECTED_FREQUENCIES[i]
 
-            with self.subTest(
-                    f'Expected probability = {expected_message_probability}'):
-                message_frequency = EXPECTED_FREQUENCIES[i]
+            with self.subTest(f'Message frequency = {message_frequency}'):
+                expected_message_probability = EXPECTED_PROBABILITIES[i]
                 real_message_probability = get_symbols_with_probability(
                     message_frequency
                 )

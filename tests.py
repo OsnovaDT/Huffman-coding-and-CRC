@@ -363,17 +363,28 @@ class TestHuffmanCode(TestCase):
         """Test get_symbols_with_frequency function"""
 
         for i in range(TEST_MESSAGES_AMOUNT):
-            real_frequency = get_symbols_with_frequency(TEST_MESSAGES[i])
+            expected_message_frequency = EXPECTED_FREQUENCIES[i]
+            real_message_frequency = get_symbols_with_frequency(
+                TEST_MESSAGES[i]
+            )
 
-            self.assertEqual(real_frequency, EXPECTED_FREQUENCIES[i])
+            self.assertEqual(
+                real_message_frequency, expected_message_frequency
+            )
 
     def test_get_symbols_with_probability(self):
         """Test get_symbols_with_probability function"""
 
         for i in range(TEST_MESSAGES_AMOUNT):
-            real_probability = get_symbols_with_probability(EXPECTED_FREQUENCIES[i])
+            message_frequency = EXPECTED_FREQUENCIES[i]
+            expected_message_probability = EXPECTED_PROBABILITIES[i]
+            real_message_probability = get_symbols_with_probability(
+                message_frequency
+            )
 
-            self.assertEqual(real_probability, EXPECTED_PROBABILITIES[i])
+            self.assertEqual(
+                real_message_probability, expected_message_probability
+            )
 
     def test_get_probability_for_symbol(self):
         """Test get_probability_for_symbol function"""
@@ -454,37 +465,6 @@ class TestHuffmanCode(TestCase):
 
                 self.assertEqual(tree, expected_tree_after_deleting)
 
-    @patch('builtins.print')
-    def test_print_frequency_and_probability_for_symbols(self, mocked_print):
-        """Test print_frequency_and_probability_for_symbols function"""
-
-        for i in range(TEST_MESSAGES_AMOUNT):
-            not_sorted_frequency = EXPECTED_FREQUENCIES[i]
-            sorted_frequency = EXPECTED_SORTED_FREQUENCIES[i]
-            probability = EXPECTED_PROBABILITIES[i]
-
-            with self.subTest(sorted_frequency):
-                mocked_print.mock_calls = []
-                letter_calls = []
-
-                print_frequency_and_probability_for_symbols(
-                    not_sorted_frequency, probability
-                )
-
-                for letter, letter_frequency in sorted_frequency.items():
-                    letter_probability = probability[letter]
-
-                    letter_calls.append(
-                        call(f'{letter}\t{letter_frequency}\t\t{letter_probability}')
-                    )
-
-                self.assertEqual(
-                    mocked_print.mock_calls,
-                    [
-                        call('Symbol\tFrequency\tProbability\n'),
-                    ] + letter_calls
-                )
-
     def test_get_entropy(self):
         """Test get_entropy function"""
 
@@ -551,6 +531,35 @@ class TestHuffmanCode(TestCase):
                     real_symbols_with_code, expected_symbols_with_code
                 )
 
+    def test_get_new_node_created_by_first_2_nodes(self):
+        """Test get_new_node_created_by_first_2_nodes function"""
+
+        for tree, expected_new_nodes in TEST_TREES_AND_EXPECTED_NEW_NODES:
+            real_new_nodes = get_new_node_created_by_first_2_nodes(tree)
+
+            self.assertEqual(real_new_nodes, expected_new_nodes)
+
+    def test_insert_node(self):
+        """Test insert_node function"""
+
+        for i in range(len(TEST_TREES_BEFORE_ADDING_NODE)):
+            insert_node(
+                TEST_NODES_AND_INDEXES_FOR_ADDING_NODE[i][0],
+                TEST_NODES_AND_INDEXES_FOR_ADDING_NODE[i][1],
+                TEST_TREES_BEFORE_ADDING_NODE[i]
+            )
+
+            self.assertEqual(TEST_TREES_BEFORE_ADDING_NODE[i], TEST_TREES_AFTER_ADDING_NODE[i])
+
+    def test_add_node_created_by_first_2_nodes(self):
+        """Test add_node_created_by_first_2_nodes function"""
+
+        for tree, expected_tree_after_adding_nodes_ in TEST_TREE_AND_TREE_AFTER_ADDING_NODES:
+            with self.subTest(f'Expected tree {expected_tree_after_adding_nodes_}'):
+                add_node_created_by_first_2_nodes(tree)
+
+                self.assertEqual(tree, expected_tree_after_adding_nodes_)
+
     @patch('builtins.print')
     def test_print_all_info_for_huffman_code(self, mocked_print):
         """Test print_all_info_for_huffman_code function"""
@@ -584,33 +593,34 @@ class TestHuffmanCode(TestCase):
                 ]
             )
 
-    def test_get_new_node_created_by_first_2_nodes(self):
-        """Test get_new_node_created_by_first_2_nodes function"""
+    @patch('builtins.print')
+    def test_print_frequency_and_probability_for_symbols(self, mocked_print):
+        """Test print_frequency_and_probability_for_symbols function"""
 
-        for tree, expected_new_nodes in TEST_TREES_AND_EXPECTED_NEW_NODES:
-            real_new_nodes = get_new_node_created_by_first_2_nodes(tree)
+        for i in range(TEST_MESSAGES_AMOUNT):
+            not_sorted_frequency = EXPECTED_FREQUENCIES[i]
+            sorted_frequency = EXPECTED_SORTED_FREQUENCIES[i]
+            probability = EXPECTED_PROBABILITIES[i]
 
-            self.assertEqual(real_new_nodes, expected_new_nodes)
+            with self.subTest(sorted_frequency):
+                mocked_print.mock_calls = []
+                letter_calls = []
 
-    def test_insert_node(self):
-        """Test insert_node function"""
+                print_frequency_and_probability_for_symbols(
+                    not_sorted_frequency, probability
+                )
 
-        for i in range(len(TEST_TREES_BEFORE_ADDING_NODE)):
-            insert_node(
-                TEST_NODES_AND_INDEXES_FOR_ADDING_NODE[i][0],
-                TEST_NODES_AND_INDEXES_FOR_ADDING_NODE[i][1],
-                TEST_TREES_BEFORE_ADDING_NODE[i]
-            )
+                for letter, letter_frequency in sorted_frequency.items():
+                    letter_probability = probability[letter]
 
-            self.assertEqual(TEST_TREES_BEFORE_ADDING_NODE[i], TEST_TREES_AFTER_ADDING_NODE[i])
+                    letter_calls.append(
+                        call(f'{letter}\t{letter_frequency}\t\t{letter_probability}')
+                    )
 
-    def test_add_node_created_by_first_2_nodes(self):
-        """Test add_node_created_by_first_2_nodes function"""
-
-        for tree, expected_tree_after_adding_nodes_ in TEST_TREE_AND_TREE_AFTER_ADDING_NODES:
-            with self.subTest(f'Expected tree {expected_tree_after_adding_nodes_}'):
-                add_node_created_by_first_2_nodes(tree)
-
-                self.assertEqual(tree, expected_tree_after_adding_nodes_)
-
+                self.assertEqual(
+                    mocked_print.mock_calls,
+                    [
+                        call('Symbol\tFrequency\tProbability\n'),
+                    ] + letter_calls
+                )
 # 670

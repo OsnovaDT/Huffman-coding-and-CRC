@@ -28,7 +28,7 @@ TEST_MESSAGES = (
 
 TEST_MESSAGES_AMOUNT = len(TEST_MESSAGES)
 
-EXPECTED_FREQUENCIES = (
+TEST_FREQUENCIES = (
     {'a': 2, 'b': 8, 'c': 4, 'd': 1, 'e': 5},
     {'b': 3, 'e': 4, 'p': 2, ' ': 2, 'o': 2, 'r': 1, '!': 1},
     {
@@ -40,7 +40,7 @@ EXPECTED_FREQUENCIES = (
     {'a': 1, 'b': 1},
 )
 
-EXPECTED_SORTED_FREQUENCIES = (
+TEST_SORTED_FREQUENCIES = (
     {'b': 8, 'e': 5, 'c': 4, 'a': 2, 'd': 1},
     {'e': 4, 'b': 3, 'p': 2, ' ': 2, 'o': 2, 'r': 1, '!': 1},
     {
@@ -364,7 +364,7 @@ class TestHuffmanCode(TestCase):
 
         for i in range(TEST_MESSAGES_AMOUNT):
             with self.subTest(f'Message = {TEST_MESSAGES[i]}'):
-                expected_message_frequency = EXPECTED_FREQUENCIES[i]
+                expected_message_frequency = TEST_FREQUENCIES[i]
                 real_message_frequency = get_symbols_with_frequency(
                     TEST_MESSAGES[i]
                 )
@@ -377,7 +377,7 @@ class TestHuffmanCode(TestCase):
         """Test get_symbols_with_probability function"""
 
         for i in range(TEST_MESSAGES_AMOUNT):
-            message_frequency = EXPECTED_FREQUENCIES[i]
+            message_frequency = TEST_FREQUENCIES[i]
 
             with self.subTest(f'Message frequency = {message_frequency}'):
                 expected_message_probability = EXPECTED_PROBABILITIES[i]
@@ -412,10 +412,12 @@ class TestHuffmanCode(TestCase):
         """Test get_sorted_symbols_with_frequency function"""
 
         for i in range(TEST_MESSAGES_AMOUNT):
+            expected_sorted_frequency = TEST_SORTED_FREQUENCIES[i]
             real_sorted_frequency = get_sorted_symbols_with_frequency(
-                EXPECTED_FREQUENCIES[i], False
+                TEST_FREQUENCIES[i],
             )
-            self.assertEqual(real_sorted_frequency, EXPECTED_SORTED_FREQUENCIES[i])
+
+            self.assertEqual(real_sorted_frequency, expected_sorted_frequency)
 
     def test_is_tree(self):
         """Test is_tree function"""
@@ -432,24 +434,32 @@ class TestHuffmanCode(TestCase):
         """Test get_huffman_code_tree function"""
 
         for i in range(TEST_MESSAGES_AMOUNT):
-            real_code_tree = get_huffman_code_tree(EXPECTED_SORTED_FREQUENCIES[i])
+            expected_code_tree = EXPECTED_HUFFMAN_CODE_TREES[i]
+            real_code_tree = get_huffman_code_tree(
+                TEST_SORTED_FREQUENCIES[i]
+            )
 
-            self.assertEqual(real_code_tree, EXPECTED_HUFFMAN_CODE_TREES[i])
+            self.assertEqual(real_code_tree, expected_code_tree)
 
     def test_get_tree_nodes_and_frequency(self):
         """Test get_tree_nodes_and_frequency function"""
 
         for i in range(TEST_MESSAGES_AMOUNT):
-            expected_node_and_frequency = EXPECTED_NODES_WITH_FREQUENCY[i]
-            frequency = EXPECTED_FREQUENCIES[i]
+            message_frequency = TEST_FREQUENCIES[i]
+            message_code_tree = [
+                list(message_frequency.keys()),
+                list(message_frequency.values())
+            ]
 
-            with self.subTest(f'Expected: {expected_node_and_frequency}'):
-                code_tree = [
-                    list(frequency.keys()), list(frequency.values())
-                ]
-                real_node_and_frequency = get_tree_nodes_and_frequency(code_tree)
+            with self.subTest(f'Code tree: {message_code_tree}'):
+                expected_node_and_frequency = EXPECTED_NODES_WITH_FREQUENCY[i]
+                real_node_and_frequency = get_tree_nodes_and_frequency(
+                    message_code_tree
+                )
 
-                self.assertEqual(real_node_and_frequency, expected_node_and_frequency)
+                self.assertEqual(
+                    real_node_and_frequency, expected_node_and_frequency
+                )
 
     def test_is_tree_built(self):
         """Test is_tree_built function"""
@@ -465,28 +475,23 @@ class TestHuffmanCode(TestCase):
     def test_delete_first_2_nodes(self):
         """Test delete_first_2_nodes function"""
 
-        for tree, expected_tree_after_deleting in TEST_TREE_AND_TREE_AFTER_DELETING_FIRST_2_NODES:
-            with self.subTest(f'Expected tree: {expected_tree_after_deleting}'):
-                delete_first_2_nodes(tree)
+        for tree, expected_tree_after_deleting_2_nodes in \
+                TEST_TREE_AND_TREE_AFTER_DELETING_FIRST_2_NODES:
+            delete_first_2_nodes(tree)
 
-                self.assertEqual(tree, expected_tree_after_deleting)
+            self.assertEqual(tree, expected_tree_after_deleting_2_nodes)
 
     def test_get_entropy(self):
         """Test get_entropy function"""
 
         for i in range(TEST_MESSAGES_AMOUNT):
-            expected_entropy = EXPECTED_ENTROPIES[i]
+            message = TEST_MESSAGES[i]
 
-            with self.subTest(f'Expected entropy: {expected_entropy}'):
-                real_entropy = get_entropy(TEST_MESSAGES[i])
+            with self.subTest(f'Message: {message}'):
+                expected_entropy = EXPECTED_ENTROPIES[i]
+                real_entropy = get_entropy(message)
 
                 self.assertEqual(real_entropy, expected_entropy)
-
-        # for message, expected_entropy in MESSAGE_AND_ENTROPY.items():
-        #     with self.subTest(f'Expected entropy: {expected_entropy}'):
-        #         real_entropy = get_entropy(message)
-
-        #         self.assertEqual(real_entropy, expected_entropy)
 
     def test_get_average_length_of_code_message(self):
         """Test get_average_length_of_code_message function"""
@@ -496,7 +501,7 @@ class TestHuffmanCode(TestCase):
                 continue
 
             symbols_with_code = TEST_SYMBOLS_WITH_CODE[i]
-            frequency = EXPECTED_FREQUENCIES[i]
+            frequency = TEST_FREQUENCIES[i]
             expected_average_length = EXPECTED_AVERAGE_LENGTHS[i]
 
             with self.subTest(f'Expected average length: {expected_average_length}'):
@@ -578,7 +583,7 @@ class TestHuffmanCode(TestCase):
                 call('Symbol\tFrequency\tProbability\n')
             ]
 
-            for letter, letter_frequency in EXPECTED_SORTED_FREQUENCIES[i].items():
+            for letter, letter_frequency in TEST_SORTED_FREQUENCIES[i].items():
                 letter_probability = EXPECTED_PROBABILITIES[i][letter]
 
                 letter_calls.append(
@@ -604,8 +609,8 @@ class TestHuffmanCode(TestCase):
         """Test print_frequency_and_probability_for_symbols function"""
 
         for i in range(TEST_MESSAGES_AMOUNT):
-            not_sorted_frequency = EXPECTED_FREQUENCIES[i]
-            sorted_frequency = EXPECTED_SORTED_FREQUENCIES[i]
+            not_sorted_frequency = TEST_FREQUENCIES[i]
+            sorted_frequency = TEST_SORTED_FREQUENCIES[i]
             probability = EXPECTED_PROBABILITIES[i]
 
             with self.subTest(sorted_frequency):

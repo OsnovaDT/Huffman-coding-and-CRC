@@ -19,13 +19,13 @@ from huffman import (
 # Data for testing
 
 # Test messages
-MESSAGES = [
+MESSAGES = (
     "aabbbbbbbbccccdeeeee",
     "beep boop beer!",
     "Communication systems with over-the-air-programming",
     '',
     'ab'
-]
+)
 
 MESSAGES_AMOUNT = len(MESSAGES)
 
@@ -43,7 +43,7 @@ EXPECTED_FREQUENCIES = (
 )
 
 # Test sorted frequencies
-EXPECTED_SORTED_FREQUENCIES = [
+EXPECTED_SORTED_FREQUENCIES = (
     {'b': 8, 'e': 5, 'c': 4, 'a': 2, 'd': 1},
     {'e': 4, 'b': 3, 'p': 2, ' ': 2, 'o': 2, 'r': 1, '!': 1},
     {
@@ -53,10 +53,10 @@ EXPECTED_SORTED_FREQUENCIES = [
     },
     {},
     {'a': 1, 'b': 1},
-]
+)
 
-# Probability
-EXPECTED_PROBABILITIES = [
+# Test probabilities
+EXPECTED_PROBABILITIES = (
     {'a': 0.1, 'b': 0.4, 'c': 0.2, 'd': 0.05, 'e': 0.25},
     {
         'b': 0.2, 'e': 0.26667, 'p': 0.13333, ' ': 0.13333,
@@ -71,121 +71,95 @@ EXPECTED_PROBABILITIES = [
     },
     {},
     {'a': 0.5, 'b': 0.5},
-]
+)
 
-# Code tree
-EXPECTED_CODE_TREE_FOR_MESSAGE_1 = [(('d', ('c', 'a')), ('b', 'e'))]
+# Test Huffman code trees
+EXPECTED_HUFFMAN_CODE_TREES = (
+    [(('d', ('c', 'a')), ('b', 'e'))],
+    [(('e', 'b'), (('!', ('o', 'r')), ('p', ' ')))],
+    [
+        ((('m', 'i'), (('-', 'h'), ('s', 'e'))),
+        ((('a', ' '), ('r', 'n')), (('o', 't'),
+        ((('v', 'p'), ('y', 'w')), (('u', 'c'), ('g', 'C'))))))
+    ],
+    [],
+    [('a', 'b')],
+)
 
-EXPECTED_CODE_TREE_FOR_MESSAGE_2 = [(('e', 'b'), (('!', ('o', 'r')), ('p', ' ')))]
-
-EXPECTED_CODE_TREE_FOR_MESSAGE_3 = [
-    ((('m', 'i'), (('-', 'h'), ('s', 'e'))),
-    ((('a', ' '), ('r', 'n')), (('o', 't'),
-    ((('v', 'p'), ('y', 'w')), (('u', 'c'), ('g', 'C'))))))
-]
-
-EXPECTED_CODE_TREE_FOR_MESSAGE_4 = []
-
-EXPECTED_CODE_TREE_FOR_MESSAGE_5 = [('a', 'b')]
-
-EXPECTED_CODE_TREES = [
-    EXPECTED_CODE_TREE_FOR_MESSAGE_1, EXPECTED_CODE_TREE_FOR_MESSAGE_2,
-    EXPECTED_CODE_TREE_FOR_MESSAGE_3, EXPECTED_CODE_TREE_FOR_MESSAGE_4,
-    EXPECTED_CODE_TREE_FOR_MESSAGE_5
-]
-
-CODE_TREES = [
+CODE_TREES_FOR_GETTING_SYMBOLS_WITH_CODE = (
     [('b', ('e', (('d', 'a'), 'c')))],
     [(('b', (' ', 'o')), ((('r', '!'), 'p'), 'e'))],
     [
-        ((('m', 'i'), (('s', 'e'), ('a', ' '))),
-        (((('p', ('w', 'v')), 'n'), ('-', ('h', 'g'))), (('t', 'r'), ((('c', 'y'), ('C', 'u')), 'o'))))
+        (
+            (('m', 'i'), (('s', 'e'), ('a', ' '))),
+            (
+                ((('p', ('w', 'v')), 'n'), ('-', ('h', 'g'))),
+                (('t', 'r'), ((('c', 'y'), ('C', 'u')), 'o'))
+            )
+        )
     ],
     None,
     [('a', 'b')],
-]
-
-# Nodes and frequency
-EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_1 = (
-    ['a', 'b', 'c', 'd', 'e'], [2, 8, 4, 1, 5]
 )
 
-EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_2 = (
-    ['b', 'e', 'p', ' ', 'o', 'r', '!'], [3, 4, 2, 2, 2, 1, 1]
+# Test nodes and frequency
+EXPECTED_NODES_WITH_FREQUENCY = (
+    (['a', 'b', 'c', 'd', 'e'], [2, 8, 4, 1, 5]),
+    (['b', 'e', 'p', ' ', 'o', 'r', '!'], [3, 4, 2, 2, 2, 1, 1]),
+    (
+        [
+            'C', 'o', 'm', 'u', 'n', 'i', 'c', 'a', 't',' ',
+            's','y', 'e','w', 'h', 'v', 'r', '-', 'p', 'g'
+        ],
+        [1, 4, 5, 1, 3, 5, 1, 3, 4, 3, 3, 1, 3, 1, 2, 1, 4, 3, 1, 2]
+    ),
+    ([], []),
+    (['a', 'b'], [1, 1])
 )
 
-EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_3 = (
-    [
-        'C', 'o', 'm', 'u', 'n', 'i', 'c', 'a', 't',' ',
-        's','y', 'e','w', 'h', 'v', 'r', '-', 'p', 'g'
-    ],
-    [1, 4, 5, 1, 3, 5, 1, 3, 4, 3, 3, 1, 3, 1, 2, 1, 4, 3, 1, 2]
+# Test entropies
+EXPECTED_ENTROPIES = (2.04145, 2.65657, 4.10876, 0, 1)
+
+SYMBOLS_WITH_CODE = (
+    {'b': '0', 'e': '10', 'c': '111', 'd': '1100', 'a': '1101'},
+    {
+        'b': '00', ' ': '010', 'o': '011', 'e': '11',
+        'p': '101', 'r': '1000', '!': '1001'
+    },
+    {
+        'm': '000', 'i': '001', 's': '0100', 'e': '0101', 'a': '0110',
+        ' ': '0111', 'n': '1001', 'p': '10000', 'w': '100010', 'v': '100011',
+        '-': '1010', 'h': '10110', 'g': '10111', 't': '1100', 'r': '1101',
+        'o': '1111', 'c': '111000', 'y': '111001', 'C': '111010', 'u': '111011'
+    },
+    None,
+    {'a': '0', 'b': '1'}
 )
-
-EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_4 = ([], [])
-
-EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_5 = (['a', 'b'], [1, 1])
-
-EXPECTED_NODES_WITH_FREQUENCY = [
-    EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_1,
-    EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_2,
-    EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_3,
-    EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_4,
-    EXPECTED_NODES_WITH_FREQUENCY_FOR_MESSAGE_5
-]
-
-# Entropy
-EXPECTED_ENTROPY_FOR_MESSAGE_1 = 2.04145
-
-EXPECTED_ENTROPY_FOR_MESSAGE_2 = 2.65657
-
-EXPECTED_ENTROPY_FOR_MESSAGE_3 = 4.10876
-
-EXPECTED_ENTROPY_FOR_MESSAGE_4 = 0
-
-EXPECTED_ENTROPY_FOR_MESSAGE_5 = 1
-
-EXPECTED_ENTROPIES = [
-    EXPECTED_ENTROPY_FOR_MESSAGE_1, EXPECTED_ENTROPY_FOR_MESSAGE_2,
-    EXPECTED_ENTROPY_FOR_MESSAGE_3, EXPECTED_ENTROPY_FOR_MESSAGE_4,
-    EXPECTED_ENTROPY_FOR_MESSAGE_5
-]
-
-# Symbols with code
-SYMBOLS_WITH_CODE_FOR_MESSAGE_1 = {
-    'b': '0', 'e': '10', 'c': '111', 'd': '1100', 'a': '1101'
-}
-
-SYMBOLS_WITH_CODE_FOR_MESSAGE_2 = {
-    'b': '00', ' ': '010', 'o': '011', 'e': '11',
-    'p': '101', 'r': '1000', '!': '1001'
-}
-
-SYMBOLS_WITH_CODE_FOR_MESSAGE_3 = {
-    'm': '000', 'i': '001', 's': '0100', 'e': '0101', 'a': '0110',
-    ' ': '0111', 'n': '1001', 'p': '10000', 'w': '100010', 'v': '100011',
-    '-': '1010', 'h': '10110', 'g': '10111', 't': '1100', 'r': '1101',
-    'o': '1111', 'c': '111000', 'y': '111001', 'C': '111010', 'u': '111011'
-}
-
-SYMBOLS_WITH_CODE_FOR_MESSAGE_5 = {'a': '0', 'b': '1'}
 
 # Data for testing is_tree function
 OBJECTS_TREES = ((1, 2, 3), (1,), ('string1', 'string2'))
 
 OBJECTS_ARE_NOT_TREES = (1, [1, 2, 3], 'string', None, 0)
 
-# Data for testing test_is_tree_built function
+# Data for testing is_tree_built function
 BUILT_TREES = (
     [[((('c', 'd'), 'e'), ('a', 'b'))], [20]],
     [[(('e', 'b'), (('!', ('o', 'r')), ('p', ' ')))], [15]],
     [
         [
-            ((('m', 'i'), (('-', 'h'),
-            ('s', 'e'))), ((('a', ' '),
-            ('r', 'n')), (('o', 't'),
-            ((('v', 'p'), ('y', 'w')),
-            (('u', 'c'), ('g', 'C'))))))
+            (
+                (('m', 'i'), (('-', 'h'), ('s', 'e'))),
+                (
+                    (('a', ' '), ('r', 'n')),
+                    (
+                        ('o', 't'),
+                        (
+                            (('v', 'p'), ('y', 'w')),
+                            (('u', 'c'), ('g', 'C'))
+                        )
+                    )
+                )
+            )
         ],
         [51]
     ],
@@ -198,22 +172,41 @@ UNBUILT_TREES = (
     [[(('e', 'b'), ('a', 'c'))], [4, 1, 2, 5, 2]]
 )
 
-TEST_TREES_AND_EXPECTED_NEW_NODES = [
-    ([
-        ['C', 'u', 'c', 'y', 'w', 'v', 'p', 'h', 'g', 'n', 'a', ' ', 's', 'e', '-', 'o', 't', 'r', 'm', 'i'],
-        [1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5]
-    ], (('C', 'u'), 2)),
-    ([
-        ['-', ('h', 'g'), (('c', 'y'), ('C', 'u')), 'o', 't', 'r', 'm', 'i', ('s', 'e'), ('a', ' '), (('p', ('w', 'v')), 'n')],
-        [3, 4, 4, 4, 4, 4, 5, 5, 6, 6, 6]
-    ], (('-', ('h', 'g')), 7)),
+# Data for testing get_new_node_created_by_first_2_nodes function
+TEST_TREES_AND_EXPECTED_NEW_NODES = (
     (
         [
-            [((('p', ('w', 'v')), 'n'), ('-', ('h', 'g'))), (('t', 'r'), ((('c', 'y'), ('C', 'u')), 'o')), (('m', 'i'), (('s', 'e'), ('a', ' ')))], [13, 16, 22]
+            ['C', 'u', 'c', 'y', 'w', 'v', 'p', 'h', 'g', 'n', 'a']
+            + [' ', 's', 'e', '-', 'o', 't', 'r', 'm', 'i'],
+            [1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5]
         ],
-        ((((('p', ('w', 'v')), 'n'), ('-', ('h', 'g'))), (('t', 'r'), ((('c', 'y'), ('C', 'u')), 'o'))), 29)
+        (('C', 'u'), 2)
+    ),
+    (
+        [
+            ['-', ('h', 'g'), (('c', 'y'), ('C', 'u')), 'o', 't', 'r',]
+            + ['m', 'i', ('s', 'e'), ('a', ' '), (('p', ('w', 'v')), 'n')],
+            [3, 4, 4, 4, 4, 4, 5, 5, 6, 6, 6]
+        ],
+        (('-', ('h', 'g')), 7)
+    ),
+    (
+        [
+            [
+                ((('p', ('w', 'v')), 'n'), ('-', ('h', 'g'))),
+                (('t', 'r'), ((('c', 'y'), ('C', 'u')), 'o')),
+                (('m', 'i'), (('s', 'e'), ('a', ' ')))
+            ],
+            [13, 16, 22]
+        ],
+        (
+            (
+                ((('p', ('w', 'v')), 'n'), ('-', ('h', 'g'))),
+                (('t', 'r'), ((('c', 'y'), ('C', 'u')), 'o'))
+            ), 29
+        )
     )
-]
+)
 
 # Data for testing delete_first_2_nodes function
 TREE_BEFORE_AND_AFTER_FIRST_2_NODES_DELETING = (
@@ -228,11 +221,6 @@ AVERAGE_LENGTHS = [
     2.1, 2.66667, 4.13729, None, 1.0
 ]
 
-SYMBOLS_WITH_CODE = [
-    SYMBOLS_WITH_CODE_FOR_MESSAGE_1, SYMBOLS_WITH_CODE_FOR_MESSAGE_2,
-    SYMBOLS_WITH_CODE_FOR_MESSAGE_3, None,
-    SYMBOLS_WITH_CODE_FOR_MESSAGE_5
-]
 
 EXPECTED_HUFFMAN_CODE_FOR_MESSAGE_1 = '110111010000000011111111111111001010'\
     + '101010'
@@ -373,7 +361,7 @@ class TestHuffmanCode(TestCase):
         for i in range(MESSAGES_AMOUNT):
             real_code_tree = get_huffman_code_tree(EXPECTED_SORTED_FREQUENCIES[i])
 
-            self.assertEqual(real_code_tree, EXPECTED_CODE_TREES[i])
+            self.assertEqual(real_code_tree, EXPECTED_HUFFMAN_CODE_TREES[i])
 
     def test_get_tree_nodes_and_frequency(self):
         """Test get_tree_nodes_and_frequency function"""
@@ -500,7 +488,7 @@ class TestHuffmanCode(TestCase):
 
             with self.subTest(f'Expected symbols with code: {expected_symbols_with_code}'):
                 real_symbols_with_code = get_symbols_with_code(
-                    *CODE_TREES[i], {}
+                    *CODE_TREES_FOR_GETTING_SYMBOLS_WITH_CODE[i], {}
                 )
 
                 self.assertEqual(
